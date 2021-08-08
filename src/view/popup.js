@@ -1,29 +1,6 @@
-const createCommentsTemplate = ({commentsNumber, comments}) => {
-  const commentsTemplateList = new Array(commentsNumber).fill(null);
-  for (let i = 0; i < commentsTemplateList.length; i++) {
-    commentsTemplateList[i] = `<li class="film-details__comment">
-      <span class="film-details__comment-emoji">
-        <img src="./images/emoji/${comments[i].emotion}.png" width="55" height="55" alt="emoji-${comments[i].emotion}">
-      </span>
-      <div>
-        <p class="film-details__comment-text">${comments[i].text}</p>
-        <p class="film-details__comment-info">
-          <span class="film-details__comment-author">${comments[i].author}</span>
-          <span class="film-details__comment-day">${comments[i].date}</span>
-          <button class="film-details__comment-delete">Delete</button>
-        </p>
-      </div>
-    </li>)`;
-  }
-  const commentsTemplate = commentsTemplateList.join('');
-  return commentsTemplate;
-};
-
-const createControlsTemplate = (filmCard) => (
-  `<button type="button" class="film-details__control-button ${filmCard.isInWatchList ? 'film-details__control-button--active' : ''} film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-  <button type="button" class="film-details__control-button ${filmCard.isAlreadyWatched ? 'film-details__control-button--active' : ''} film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-  <button type="button" class="film-details__control-button ${filmCard.isInFavorites ? 'film-details__control-button--active' : ''} film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>`
-);
+import {createElement} from '../utils.js';
+import CommentsView from './comments.js';
+import PopupControlsView from './popup-controls.js';
 
 export const createPopupTemplate = (filmCard) => (`<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -89,7 +66,7 @@ export const createPopupTemplate = (filmCard) => (`<section class="film-details"
       </div>
 
       <section class="film-details__controls">
-        ${createControlsTemplate(filmCard)}
+        ${new PopupControlsView(filmCard).getTemplate()}
       </section>
     </div>
 
@@ -98,7 +75,7 @@ export const createPopupTemplate = (filmCard) => (`<section class="film-details"
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${filmCard.commentsNumber}</span></h3>
 
         <ul class="film-details__comments-list">
-          ${createCommentsTemplate(filmCard)}
+          ${new CommentsView(filmCard).getTemplate()}
         </ul>
 
         <div class="film-details__new-comment">
@@ -134,3 +111,25 @@ export const createPopupTemplate = (filmCard) => (`<section class="film-details"
     </div>
   </form>
 </section>`);
+
+export default class PopupView {
+  constructor(card) {
+    this._element = null;
+    this._card = card;
+  }
+
+  getTemplate() {
+    return createPopupTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

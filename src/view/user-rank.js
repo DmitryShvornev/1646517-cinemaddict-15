@@ -1,4 +1,5 @@
 import {cardsToFilterMap} from './menu.js';
+import {createElement} from '../utils.js';
 
 const LOW_RANK = 'Novice';
 const MIDDLE_RANK = 'Fan';
@@ -23,3 +24,25 @@ export const createUserRankTemplate = (cards) => {
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
   </section>`;
 };
+
+export default class UserRankView {
+  constructor(cards) {
+    this._element = null;
+    this._cards = cards;
+  }
+
+  getTemplate() {
+    return createUserRankTemplate(this._cards);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 export const cardsToFilterMap = {
   all: (cards) => cards.length,
   watchlist: (cards) => cards.filter((card) => card.isInWatchList).length,
@@ -15,10 +17,25 @@ export const createMenuTemplate = (cards) => (`<nav class="main-navigation">
   <a href="#stats" class="main-navigation__additional">Stats</a>
 </nav>`);
 
-export const createSortMenuTemplate = () => (`<ul class="sort">
-  <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-  <li><a href="#" class="sort__button">Sort by date</a></li>
-  <li><a href="#" class="sort__button">Sort by rating</a></li>
-</ul>`);
 
-export const createStatsTemplate = (cards) => `<p>${cardsToFilterMap.all(cards)} movies inside</p>`;
+export default class MenuView {
+  constructor(cards) {
+    this._element = null;
+    this._cards = cards;
+  }
+
+  getTemplate() {
+    return createMenuTemplate(this._cards);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
