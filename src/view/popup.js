@@ -1,15 +1,15 @@
-const createCommentsTemplate = (filmCard) => {
-  const commentsTemplateList = new Array(filmCard.commentsNumber).fill(null);
+const createCommentsTemplate = ({commentsNumber, comments}) => {
+  const commentsTemplateList = new Array(commentsNumber).fill(null);
   for (let i = 0; i < commentsTemplateList.length; i++) {
     commentsTemplateList[i] = `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
-        <img src="./images/emoji/${filmCard.comments[i].emotion}.png" width="55" height="55" alt="emoji-${filmCard.comments[i].emotion}">
+        <img src="./images/emoji/${comments[i].emotion}.png" width="55" height="55" alt="emoji-${comments[i].emotion}">
       </span>
       <div>
-        <p class="film-details__comment-text">${filmCard.comments[i].text}</p>
+        <p class="film-details__comment-text">${comments[i].text}</p>
         <p class="film-details__comment-info">
-          <span class="film-details__comment-author">${filmCard.comments[i].author}</span>
-          <span class="film-details__comment-day">${filmCard.comments[i].date}</span>
+          <span class="film-details__comment-author">${comments[i].author}</span>
+          <span class="film-details__comment-day">${comments[i].date}</span>
           <button class="film-details__comment-delete">Delete</button>
         </p>
       </div>
@@ -19,7 +19,7 @@ const createCommentsTemplate = (filmCard) => {
   return commentsTemplate;
 };
 
-const createControlsTemplate = (filmCard) => ( //film-details__control-button--active
+const createControlsTemplate = (filmCard) => (
   `<button type="button" class="film-details__control-button ${filmCard.isInWatchList ? 'film-details__control-button--active' : ''} film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
   <button type="button" class="film-details__control-button ${filmCard.isAlreadyWatched ? 'film-details__control-button--active' : ''} film-details__control-button--watched" id="watched" name="watched">Already watched</button>
   <button type="button" class="film-details__control-button ${filmCard.isInFavorites ? 'film-details__control-button--active' : ''} film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>`
