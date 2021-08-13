@@ -7,7 +7,7 @@ import PopupView from './view/popup.js';
 import ShowMoreButtonView from './view/show-more-button.js';
 import UserRankView from './view/user-rank.js';
 import {generateCard, CARDS_NUMBER} from './mock/data.js';
-import {render, RenderPosition} from './utils.js';
+import {render} from './utils.js';
 
 const LIST_RENDER_COUNT = 5;
 const EXTRA_LIST_RENDER_COUNT = 2;
@@ -34,13 +34,13 @@ const renderCard = (cardListElement, card) => {
   cardComponent.getElement().querySelector('.film-card__title').addEventListener('click', onCardClick);
   cardComponent.getElement().querySelector('.film-card__comments').addEventListener('click', onCardClick);
   popupComponent.getElement().querySelector('.film-details__close-btn').addEventListener('click', onCardClose);
-  render(cardListElement, cardComponent.getElement(), RenderPosition.BEFOREEND);
+  render(cardListElement, cardComponent.getElement());
 };
 
-render(siteHeaderElement, new UserRankView(cards).getElement(), RenderPosition.BEFOREEND);
-render(siteMainElement, new MenuView(cards).getElement(), RenderPosition.BEFOREEND);
-render(siteMainElement, new SortMenuView().getElement(), RenderPosition.BEFOREEND);
-render(siteMainElement, new CardListView().getElement(), RenderPosition.BEFOREEND);
+render(siteHeaderElement, new UserRankView(cards).getElement());
+render(siteMainElement, new MenuView(cards).getElement());
+render(siteMainElement, new SortMenuView().getElement());
+render(siteMainElement, new CardListView().getElement());
 
 const filmsListElement = siteMainElement.querySelector('.films-list');
 const filmsListContainer = filmsListElement.querySelector('.films-list__container');
@@ -52,9 +52,9 @@ for (let i = 0; i < Math.min(cards.length, LIST_RENDER_COUNT); i++) {
 
 if (cards.length > LIST_RENDER_COUNT) {
   let renderedCardsCount = LIST_RENDER_COUNT;
-  render(filmsListElement, new ShowMoreButtonView().getElement(), RenderPosition.BEFOREEND);
-  const showMoreButton = filmsListElement.querySelector('.films-list__show-more');
-  showMoreButton.addEventListener('click', (evt) => {
+  const showMoreButton = new ShowMoreButtonView().getElement();
+  render(filmsListElement, showMoreButton);
+  const onShowMoreButtonClick = (evt) => {
     evt.preventDefault();
     cards
       .slice(renderedCardsCount, renderedCardsCount + LIST_RENDER_COUNT)
@@ -65,7 +65,8 @@ if (cards.length > LIST_RENDER_COUNT) {
     if (renderedCardsCount >= cards.length) {
       showMoreButton.remove();
     }
-  });
+  };
+  showMoreButton.addEventListener('click', onShowMoreButtonClick);
 }
 
 const extraFilmsLists = document.querySelectorAll('.films-list--extra');
@@ -79,4 +80,4 @@ for (let j = 0; j < EXTRA_LIST_RENDER_COUNT; j++) {
   renderCard(mostCommentedFilmsContainer, cards[j+7]);
 }
 
-render(footerStats, new StatsView(cards).getElement(), RenderPosition.BEFOREEND);
+render(footerStats, new StatsView(cards).getElement());

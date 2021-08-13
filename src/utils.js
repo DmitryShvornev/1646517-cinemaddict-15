@@ -1,22 +1,21 @@
 export const RenderPosition = {
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
+  AFTER_BEGIN: 'afterbegin',
+  BEFORE_END: 'beforeend',
 };
 
-export const render = (container, element, place) => {
+export const render = (container, element, place = RenderPosition.BEFORE_END) => {
   switch (place) {
-    case RenderPosition.AFTERBEGIN:
+    case RenderPosition.AFTER_BEGIN:
       container.prepend(element);
       break;
-    case RenderPosition.BEFOREEND:
+    case RenderPosition.BEFORE_END:
       container.append(element);
       break;
   }
 };
 
 export const createElement = (template) => {
-  const newElement = document.createElement('div'); // 1
-  newElement.innerHTML = template; // 2
-
-  return newElement.firstChild; // 3
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+  return newElement.firstChild;
 };

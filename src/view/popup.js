@@ -2,7 +2,10 @@ import {createElement} from '../utils.js';
 import CommentsView from './comments.js';
 import PopupControlsView from './popup-controls.js';
 
-export const createPopupTemplate = (filmCard) => (`<section class="film-details">
+export const createPopupTemplate = (filmCard) => {
+  const popupControlsTemplate = new PopupControlsView(filmCard).getTemplate();
+  const commentsTemplate = new CommentsView(filmCard).getTemplate();
+  return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
       <div class="film-details__close">
@@ -66,7 +69,7 @@ export const createPopupTemplate = (filmCard) => (`<section class="film-details"
       </div>
 
       <section class="film-details__controls">
-        ${new PopupControlsView(filmCard).getTemplate()}
+        ${popupControlsTemplate}
       </section>
     </div>
 
@@ -75,7 +78,7 @@ export const createPopupTemplate = (filmCard) => (`<section class="film-details"
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${filmCard.commentsNumber}</span></h3>
 
         <ul class="film-details__comments-list">
-          ${new CommentsView(filmCard).getTemplate()}
+          ${commentsTemplate}
         </ul>
 
         <div class="film-details__new-comment">
@@ -110,7 +113,8 @@ export const createPopupTemplate = (filmCard) => (`<section class="film-details"
       </section>
     </div>
   </form>
-</section>`);
+</section>`;
+};
 
 export default class PopupView {
   constructor(card) {
