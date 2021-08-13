@@ -1,14 +1,16 @@
 import {createElement} from '../utils.js';
+import {cardsToFilterMap} from './menu.js';
 
-export const createShowMoreButtonTemplate = () => '<button class="films-list__show-more">Show more</button>';
+export const createStatsTemplate = (cards) => `<p>${cardsToFilterMap.all(cards)} movies inside</p>`;
 
-export default class ShowMoreButtonView {
-  constructor() {
+export default class StatsView {
+  constructor(cards) {
     this._element = null;
+    this._cards = cards;
   }
 
   getTemplate() {
-    return createShowMoreButtonTemplate();
+    return createStatsTemplate(this._cards);
   }
 
   getElement() {

@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 export const createCardTemplate = (filmCard) => (`<article class="film-card">
   <h3 class="film-card__title">${filmCard.title}</h3>
   <p class="film-card__rating">${filmCard.rating}</p>
@@ -16,25 +18,26 @@ export const createCardTemplate = (filmCard) => (`<article class="film-card">
   </div>
 </article>`);
 
-export const createCardListTemplate = () => (`<section class="films">
-  <section class="films-list">
-    <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
-    <div class="films-list__container">
 
-    </div>
-  </section>
+export default class CardView {
+  constructor(card) {
+    this._card = card;
+    this._element = null;
+  }
 
-  <section class="films-list films-list--extra">
-    <h2 class="films-list__title">Top rated</h2>
-    <div class="films-list__container">
+  getTemplate() {
+    return createCardTemplate(this._card);
+  }
 
-    </div>
-  </section>
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
 
-  <section class="films-list films-list--extra">
-    <h2 class="films-list__title">Most commented</h2>
-    <div class="films-list__container">
+    return this._element;
+  }
 
-    </div>
-  </section>
-</section>`);
+  removeElement() {
+    this._element = null;
+  }
+}

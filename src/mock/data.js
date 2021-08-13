@@ -120,7 +120,7 @@ const generateComment = () => {
 };
 
 const generateCommentsList = (number) => {
-  const commentsList = new Array(number).fill(null).map(() => generateComment());
+  const commentsList = new Array(number).fill().map(() => generateComment());
   return commentsList;
 };
 
