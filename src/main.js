@@ -7,7 +7,8 @@ import PopupView from './view/popup.js';
 import ShowMoreButtonView from './view/show-more-button.js';
 import UserRankView from './view/user-rank.js';
 import {generateCard, CARDS_NUMBER} from './mock/data.js';
-import {render} from './utils.js';
+import {render, RenderPosition} from './utils.js';
+import NoCardView from './view/no-card.js';
 
 const LIST_RENDER_COUNT = 5;
 const EXTRA_LIST_RENDER_COUNT = 2;
@@ -30,54 +31,72 @@ const renderCard = (cardListElement, card) => {
     siteBodyElement.classList.remove('hide-overflow');
     siteBodyElement.removeChild(popupComponent.getElement());
   };
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      siteBodyElement.classList.remove('hide-overflow');
+      siteBodyElement.removeChild(popupComponent.getElement());
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
   cardComponent.getElement().querySelector('.film-card__poster').addEventListener('click', onCardClick);
   cardComponent.getElement().querySelector('.film-card__title').addEventListener('click', onCardClick);
   cardComponent.getElement().querySelector('.film-card__comments').addEventListener('click', onCardClick);
   popupComponent.getElement().querySelector('.film-details__close-btn').addEventListener('click', onCardClose);
+  document.addEventListener('keydown', onEscKeyDown);
   render(cardListElement, cardComponent.getElement());
 };
 
 render(siteHeaderElement, new UserRankView(cards).getElement());
 render(siteMainElement, new MenuView(cards).getElement());
-render(siteMainElement, new SortMenuView().getElement());
-render(siteMainElement, new CardListView().getElement());
 
-const filmsListElement = siteMainElement.querySelector('.films-list');
-const filmsListContainer = filmsListElement.querySelector('.films-list__container');
+const renderSite = (mainElement, cardsData) => {
+  if (cardsData.length === 0) {
+    render(mainElement, new NoCardView.getElement(), RenderPosition.AFTER_BEGIN);
+    return;
+  }
+  render(mainElement, new SortMenuView().getElement());
+  render(mainElement, new CardListView().getElement());
 
-for (let i = 0; i < Math.min(cards.length, LIST_RENDER_COUNT); i++) {
-  renderCard(filmsListContainer, cards[i]);
-}
+  const filmsListElement = mainElement.querySelector('.films-list');
+  const filmsListContainer = filmsListElement.querySelector('.films-list__container');
+
+  for (let i = 0; i < Math.min(cardsData.length, LIST_RENDER_COUNT); i++) {
+    renderCard(filmsListContainer, cardsData[i]);
+  }
 
 
-if (cards.length > LIST_RENDER_COUNT) {
-  let renderedCardsCount = LIST_RENDER_COUNT;
-  const showMoreButton = new ShowMoreButtonView().getElement();
-  render(filmsListElement, showMoreButton);
-  const onShowMoreButtonClick = (evt) => {
-    evt.preventDefault();
-    cards
-      .slice(renderedCardsCount, renderedCardsCount + LIST_RENDER_COUNT)
-      .forEach((card) => renderCard(filmsListContainer, card));
+  if (cardsData.length > LIST_RENDER_COUNT) {
+    let renderedCardsCount = LIST_RENDER_COUNT;
+    const showMoreButton = new ShowMoreButtonView().getElement();
+    render(filmsListElement, showMoreButton);
+    const onShowMoreButtonClick = (evt) => {
+      evt.preventDefault();
+      cardsData
+        .slice(renderedCardsCount, renderedCardsCount + LIST_RENDER_COUNT)
+        .forEach((card) => renderCard(filmsListContainer, card));
 
-    renderedCardsCount += LIST_RENDER_COUNT;
+      renderedCardsCount += LIST_RENDER_COUNT;
 
-    if (renderedCardsCount >= cards.length) {
-      showMoreButton.remove();
-    }
-  };
-  showMoreButton.addEventListener('click', onShowMoreButtonClick);
-}
+      if (renderedCardsCount >= cardsData.length) {
+        showMoreButton.remove();
+      }
+    };
+    showMoreButton.addEventListener('click', onShowMoreButtonClick);
+  }
 
-const extraFilmsLists = document.querySelectorAll('.films-list--extra');
-const topRatedFilmsList = extraFilmsLists[0];
-const topRatedFilmsContainer = topRatedFilmsList.querySelector('.films-list__container');
-const mostCommentedFilmsList = extraFilmsLists[1];
-const mostCommentedFilmsContainer = mostCommentedFilmsList.querySelector('.films-list__container');
+  const extraFilmsLists = document.querySelectorAll('.films-list--extra');
+  const topRatedFilmsList = extraFilmsLists[0];
+  const topRatedFilmsContainer = topRatedFilmsList.querySelector('.films-list__container');
+  const mostCommentedFilmsList = extraFilmsLists[1];
+  const mostCommentedFilmsContainer = mostCommentedFilmsList.querySelector('.films-list__container');
 
-for (let j = 0; j < EXTRA_LIST_RENDER_COUNT; j++) {
-  renderCard(topRatedFilmsContainer,cards[j+5]);
-  renderCard(mostCommentedFilmsContainer, cards[j+7]);
-}
+  for (let j = 0; j < EXTRA_LIST_RENDER_COUNT; j++) {
+    renderCard(topRatedFilmsContainer,cardsData[j+5]);
+    renderCard(mostCommentedFilmsContainer, cardsData[j+7]);
+  }
 
-render(footerStats, new StatsView(cards).getElement());
+  render(footerStats, new StatsView(cardsData).getElement());
+};
+
+renderSite(siteMainElement, cards);
