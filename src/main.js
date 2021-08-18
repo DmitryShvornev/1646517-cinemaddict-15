@@ -36,7 +36,6 @@ const renderCard = (cardListElement, card) => {
       evt.preventDefault();
       siteBodyElement.classList.remove('hide-overflow');
       siteBodyElement.removeChild(popupComponent.getElement());
-      document.removeEventListener('keydown', onEscKeyDown);
     }
   };
   cardComponent.getElement().querySelector('.film-card__poster').addEventListener('click', onCardClick);
@@ -52,8 +51,7 @@ render(siteMainElement, new MenuView(cards).getElement());
 
 const renderSite = (mainElement, cardsData) => {
   if (cardsData.length === 0) {
-    render(mainElement, new NoCardView.getElement(), RenderPosition.AFTER_BEGIN);
-    return;
+    return render(mainElement, new NoCardView.getElement(), RenderPosition.AFTER_BEGIN);
   }
   render(mainElement, new SortMenuView().getElement());
   render(mainElement, new CardListView().getElement());

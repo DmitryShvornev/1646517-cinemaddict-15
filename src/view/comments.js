@@ -12,7 +12,7 @@ const createCommentsTemplate = ({comments}) => (comments.slice().map((comment) =
       <button class="film-details__comment-delete">Delete</button>
     </p>
   </div>
-</li>)`));
+</li>`).join(''));
 
 export default class CommentsView {
   constructor(card) {
