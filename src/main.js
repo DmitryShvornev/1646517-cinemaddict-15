@@ -20,29 +20,32 @@ const footerStats = document.querySelector('.footer__statistics');
 
 const cards = new Array(CARDS_NUMBER).fill(null).map(() => generateCard());
 
+
 const renderCard = (cardListElement, card) => {
   const cardComponent = new CardView(card);
   const popupComponent = new PopupView(card);
-  const onCardClick = () => {
-    siteBodyElement.classList.add('hide-overflow');
-    siteBodyElement.appendChild(popupComponent.getElement());
-  };
-  const onCardClose = () => {
-    siteBodyElement.classList.remove('hide-overflow');
-    siteBodyElement.removeChild(popupComponent.getElement());
-  };
   const onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       siteBodyElement.classList.remove('hide-overflow');
       siteBodyElement.removeChild(popupComponent.getElement());
+      document.removeEventListener('keydown', onEscKeyDown);
     }
+  };
+  const onCardClick = () => {
+    siteBodyElement.classList.add('hide-overflow');
+    siteBodyElement.appendChild(popupComponent.getElement());
+    document.addEventListener('keydown', onEscKeyDown);
+  };
+  const onCardClose = () => {
+    siteBodyElement.classList.remove('hide-overflow');
+    siteBodyElement.removeChild(popupComponent.getElement());
+    document.removeEventListener('keydown', onEscKeyDown);
   };
   cardComponent.getElement().querySelector('.film-card__poster').addEventListener('click', onCardClick);
   cardComponent.getElement().querySelector('.film-card__title').addEventListener('click', onCardClick);
   cardComponent.getElement().querySelector('.film-card__comments').addEventListener('click', onCardClick);
   popupComponent.getElement().querySelector('.film-details__close-btn').addEventListener('click', onCardClose);
-  document.addEventListener('keydown', onEscKeyDown);
   render(cardListElement, cardComponent.getElement());
 };
 
