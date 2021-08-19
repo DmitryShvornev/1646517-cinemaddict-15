@@ -9,6 +9,7 @@ import UserRankView from './view/user-rank.js';
 import {generateCard, CARDS_NUMBER} from './mock/data.js';
 import {render, RenderPosition} from './utils.js';
 import NoCardView from './view/no-card.js';
+import FilmsListView from './view/films-list.js';
 
 const LIST_RENDER_COUNT = 5;
 const EXTRA_LIST_RENDER_COUNT = 2;
@@ -58,8 +59,9 @@ const renderSite = (mainElement, cardsData) => {
   }
   render(mainElement, new SortMenuView().getElement());
   render(mainElement, new CardListView().getElement());
-
-  const filmsListElement = mainElement.querySelector('.films-list');
+  const cardListElement = mainElement.querySelector('.films');
+  const filmsListElement = new FilmsListView('all').getElement();
+  render(cardListElement, filmsListElement);
   const filmsListContainer = filmsListElement.querySelector('.films-list__container');
 
   for (let i = 0; i < Math.min(cardsData.length, LIST_RENDER_COUNT); i++) {
@@ -86,10 +88,11 @@ const renderSite = (mainElement, cardsData) => {
     showMoreButton.addEventListener('click', onShowMoreButtonClick);
   }
 
-  const extraFilmsLists = document.querySelectorAll('.films-list--extra');
-  const topRatedFilmsList = extraFilmsLists[0];
+  const topRatedFilmsList = new FilmsListView('topRated').getElement();
+  render(cardListElement, topRatedFilmsList);
   const topRatedFilmsContainer = topRatedFilmsList.querySelector('.films-list__container');
-  const mostCommentedFilmsList = extraFilmsLists[1];
+  const mostCommentedFilmsList = new FilmsListView('mostCommented').getElement();
+  render(cardListElement, mostCommentedFilmsList);
   const mostCommentedFilmsContainer = mostCommentedFilmsList.querySelector('.films-list__container');
 
   for (let j = 0; j < EXTRA_LIST_RENDER_COUNT; j++) {
