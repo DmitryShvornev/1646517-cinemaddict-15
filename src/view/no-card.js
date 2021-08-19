@@ -1,17 +1,20 @@
 import {createElement} from '../utils.js';
 
-export const createCardListTemplate = () => (
+const createNoCardTemplate = () => (
   `<section class="films">
+    <section class="films-list">
+      <h2 class="films-list__title">There are no movies in our database</h2>
+    </section>
+  </section>`
+);
 
-</section>`);
-
-export default class CardListView {
+export default class NoCardView {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createCardListTemplate();
+    return createNoCardTemplate();
   }
 
   getElement() {
