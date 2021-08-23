@@ -1,28 +1,11 @@
-import {createElement} from '../utils.js';
+import AbstractView from './abstract.js';
 
 export const createCardListTemplate = () => (
   `<section class="films">
+  </section>`);
 
-</section>`);
-
-export default class CardListView {
-  constructor() {
-    this._element = null;
-  }
-
+export default class CardListView extends AbstractView {
   getTemplate() {
     return createCardListTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

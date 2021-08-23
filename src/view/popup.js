@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractView from './abstract.js';
 import CommentsView from './comments.js';
 import PopupControlsView from './popup-controls.js';
 
@@ -116,24 +116,24 @@ export const createPopupTemplate = (filmCard) => {
 </section>`;
 };
 
-export default class PopupView {
+export default class PopupView extends AbstractView {
   constructor(card) {
-    this._element = null;
+    super();
     this._card = card;
+    this._closeButtonHandler = this._closeButtonHandler.bind(this);
   }
 
   getTemplate() {
     return createPopupTemplate(this._card);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
+  _closeButtonHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeButton();
   }
 
-  removeElement() {
-    this._element = null;
+  setCloseButtonHandler(callback) {
+    this._callback.closeButton = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._closeButtonHandler);
   }
 }

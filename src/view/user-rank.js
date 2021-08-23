@@ -1,5 +1,5 @@
 import {cardsToFilterMap} from './menu.js';
-import {createElement} from '../utils.js';
+import AbstractView from './abstract.js';
 
 const LOW_RANK = 'Novice';
 const MIDDLE_RANK = 'Fan';
@@ -25,24 +25,13 @@ export const createUserRankTemplate = (cards) => {
   </section>`;
 };
 
-export default class UserRankView {
+export default class UserRankView extends AbstractView {
   constructor(cards) {
-    this._element = null;
+    super();
     this._cards = cards;
   }
 
   getTemplate() {
     return createUserRankTemplate(this._cards);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
