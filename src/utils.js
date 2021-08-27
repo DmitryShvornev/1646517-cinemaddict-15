@@ -1,5 +1,7 @@
 import AbstractView from './view/abstract.js';
 
+const siteBodyElement = document.querySelector('body');
+
 export const RenderPosition = {
   AFTER_BEGIN: 'afterbegin',
   BEFORE_END: 'beforeend',
@@ -29,4 +31,15 @@ export const createElement = (template) => {
   const newElement = document.createElement('div');
   newElement.innerHTML = template;
   return newElement.firstChild;
+};
+
+
+export const pushBodyElement = (component) => {
+  siteBodyElement.classList.add('hide-overflow');
+  siteBodyElement.appendChild(component.getElement());
+};
+
+export const popBodyElement = (component) => {
+  siteBodyElement.classList.remove('hide-overflow');
+  siteBodyElement.removeChild(component.getElement());
 };
