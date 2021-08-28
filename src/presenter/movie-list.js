@@ -3,9 +3,8 @@ import CardListView from '../view/card-list.js';
 import NoCardView from '../view/no-card.js';
 import FilmsListView from '../view/films-list.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
-import {render, RenderPosition, pushBodyElement, popBodyElement} from '../utils.js';
-import CardView from '../view/card.js';
-import PopupView from '../view/popup.js';
+import {render, remove, RenderPosition, updateItem} from '../utils.js';
+import CardPresenter from './movie.js';
 import {listTitles} from '../view/films-list.js';
 
 const LIST_RENDER_COUNT = 5;
@@ -18,6 +17,12 @@ export default class MovieListPresenter {
     this._sortComponent = new SortMenuView();
     this._cardListComponent = new CardListView();
     this._filmsListComponent = new FilmsListView(listTitles.ALL);
+    this._showMoreButtonComponent = new ShowMoreButtonView();
+    this._renderedCardsCount = LIST_RENDER_COUNT;
+    this._cardPresenter = new Map();
+    this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
+    this._handleCardChange = this._handleCardChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(cards) {
@@ -25,33 +30,23 @@ export default class MovieListPresenter {
     this._renderMovieList();
   }
 
+  _handleCardChange(updatedCard) {
+    this._cards = updateItem(this._cards, updatedCard);
+    this._cardPresenter.get(updatedCard.id).init(updatedCard);
+  }
+
+  _handleModeChange() {
+    this._cardPresenter.forEach((presenter) => presenter.resetView());
+  }
+
   _renderSortMenu(){
     render(this._container, this._sortComponent);
   }
 
   _renderCard(cardListElement, card) {
-    const cardComponent = new CardView(card);
-    const popupComponent = new PopupView(card);
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        popBodyElement(popupComponent);
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-    const onCardClick = () => {
-      pushBodyElement(popupComponent);
-      document.addEventListener('keydown', onEscKeyDown);
-    };
-    const onCardClose = () => {
-      popBodyElement(popupComponent);
-      document.removeEventListener('keydown', onEscKeyDown);
-    };
-    cardComponent.setPosterClickHandler(onCardClick);
-    cardComponent.setTitleClickHandler(onCardClick);
-    cardComponent.setCommentsClickHandler(onCardClick);
-    popupComponent.setCloseButtonHandler(onCardClose);
-    render(cardListElement, cardComponent);
+    const cardPresenter = new CardPresenter(cardListElement, this._handleCardChange, this._handleModeChange);
+    cardPresenter.init(card);
+    this._cardPresenter.set(card.id, cardPresenter);
   }
 
   _renderCardList() {
@@ -62,22 +57,21 @@ export default class MovieListPresenter {
     render(this._container, this._noCardComponent, RenderPosition.AFTER_BEGIN);
   }
 
-  _renderShowMoreButton(listContainer) {
-    let renderedCardsCount = LIST_RENDER_COUNT;
-    const showMoreButton = new ShowMoreButtonView();
-    const onShowMoreButtonClick = () => {
-      this._cards
-        .slice(renderedCardsCount, renderedCardsCount + LIST_RENDER_COUNT)
-        .forEach((card) => this._renderCard(listContainer, card));
+  _handleShowMoreButtonClick() {
+    this._cards
+      .slice(this._renderedCardsCount, this._renderedCardsCount + LIST_RENDER_COUNT)
+      .forEach((card) => this._renderCard(this._filmsListComponent.getElement().querySelector('.films-list__container'), card));
 
-      renderedCardsCount += LIST_RENDER_COUNT;
+    this._renderedCardsCount += LIST_RENDER_COUNT;
 
-      if (renderedCardsCount >= this._cards.length) {
-        showMoreButton.getElement().remove();
-      }
-    };
-    showMoreButton.setClickHandler(onShowMoreButtonClick);
-    render(this._filmsListComponent.getElement(), showMoreButton);
+    if (this._renderedCardsCount >= this._cards.length) {
+      remove(this._showMoreButtonComponent);
+    }
+  }
+
+  _renderShowMoreButton() {
+    this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
+    render(this._filmsListComponent.getElement(), this._showMoreButtonComponent);
   }
 
   _renderMovieList() {
@@ -96,7 +90,7 @@ export default class MovieListPresenter {
     }
 
     if (this._cards.length > LIST_RENDER_COUNT) {
-      this._renderShowMoreButton(filmsListContainer);
+      this._renderShowMoreButton();
     }
     const topRatedFilmsList = new FilmsListView(listTitles.TOP_RATED);
     render(cardListElement, topRatedFilmsList);
