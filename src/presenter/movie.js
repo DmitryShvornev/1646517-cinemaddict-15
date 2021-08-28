@@ -54,6 +54,7 @@ export default class CardPresenter {
     }
 
     if (this._popupMode === popupMode.OPENED) {
+      replace(this._cardComponent, prevCardComponent);
       replace(this._popupComponent, prevPopupComponent);
     }
 
@@ -76,8 +77,8 @@ export default class CardPresenter {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       popBodyElement(this._popupComponent);
-      document.removeEventListener('keydown', this._handleEscKeyDown);
       this._popupMode = popupMode.CLOSED;
+      document.removeEventListener('keydown', this._handleEscKeyDown);
     }
   }
 
@@ -90,8 +91,8 @@ export default class CardPresenter {
 
   _handleCardClose() {
     popBodyElement(this._popupComponent);
-    document.removeEventListener('keydown', this._handleEscKeyDown);
     this._popupMode = popupMode.CLOSED;
+    document.removeEventListener('keydown', this._handleEscKeyDown);
   }
 
   _handleAddToWatchListClick() {
