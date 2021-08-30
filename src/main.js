@@ -1,106 +1,19 @@
-import CardView from './view/card.js';
-import CardListView from './view/card-list.js';
 import MenuView from './view/menu.js';
-import SortMenuView from './view/sort-menu.js';
 import StatsView from './view/stats.js';
-import PopupView from './view/popup.js';
-import ShowMoreButtonView from './view/show-more-button.js';
 import UserRankView from './view/user-rank.js';
 import {generateCard, CARDS_NUMBER} from './mock/data.js';
-import {render, RenderPosition} from './utils.js';
-import NoCardView from './view/no-card.js';
-import FilmsListView from './view/films-list.js';
-import {listTitles} from './view/films-list.js';
-
-const LIST_RENDER_COUNT = 5;
-const EXTRA_LIST_RENDER_COUNT = 2;
+import {render} from './utils.js';
+import MovieListPresenter from './presenter/movie-list.js';
 
 const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
-const siteBodyElement = document.querySelector('body');
 const footerStats = document.querySelector('.footer__statistics');
 
 const cards = new Array(CARDS_NUMBER).fill(null).map(() => generateCard());
 
-
-const renderCard = (cardListElement, card) => {
-  const cardComponent = new CardView(card);
-  const popupComponent = new PopupView(card);
-  const onEscKeyDown = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      siteBodyElement.classList.remove('hide-overflow');
-      siteBodyElement.removeChild(popupComponent.getElement());
-      document.removeEventListener('keydown', onEscKeyDown);
-    }
-  };
-  const onCardClick = () => {
-    siteBodyElement.classList.add('hide-overflow');
-    siteBodyElement.appendChild(popupComponent.getElement());
-    document.addEventListener('keydown', onEscKeyDown);
-  };
-  const onCardClose = () => {
-    siteBodyElement.classList.remove('hide-overflow');
-    siteBodyElement.removeChild(popupComponent.getElement());
-    document.removeEventListener('keydown', onEscKeyDown);
-  };
-  cardComponent.setPosterClickHandler(onCardClick);
-  cardComponent.setTitleClickHandler(onCardClick);
-  cardComponent.setCommentsClickHandler(onCardClick);
-  popupComponent.setCloseButtonHandler(onCardClose);
-  render(cardListElement, cardComponent);
-};
-
 render(siteHeaderElement, new UserRankView(cards));
 render(siteMainElement, new MenuView(cards));
 
-const renderSite = (mainElement, cardsData) => {
-  if (cardsData.length === 0) {
-    return render(mainElement, new NoCardView.getElement(), RenderPosition.AFTER_BEGIN);
-  }
-  render(mainElement, new SortMenuView());
-  render(mainElement, new CardListView());
-  const cardListElement = mainElement.querySelector('.films');
-  const filmsListElement = new FilmsListView(listTitles.ALL).getElement();
-  render(cardListElement, filmsListElement);
-  const filmsListContainer = filmsListElement.querySelector('.films-list__container');
-
-  for (let i = 0; i < Math.min(cardsData.length, LIST_RENDER_COUNT); i++) {
-    renderCard(filmsListContainer, cardsData[i]);
-  }
-
-
-  if (cardsData.length > LIST_RENDER_COUNT) {
-    let renderedCardsCount = LIST_RENDER_COUNT;
-    const showMoreButton = new ShowMoreButtonView();
-    const onShowMoreButtonClick = () => {
-      cardsData
-        .slice(renderedCardsCount, renderedCardsCount + LIST_RENDER_COUNT)
-        .forEach((card) => renderCard(filmsListContainer, card));
-
-      renderedCardsCount += LIST_RENDER_COUNT;
-
-      if (renderedCardsCount >= cardsData.length) {
-        showMoreButton.getElement().remove();
-      }
-    };
-    showMoreButton.setClickHandler(onShowMoreButtonClick);
-    render(filmsListElement, showMoreButton);
-  }
-
-  const topRatedFilmsList = new FilmsListView(listTitles.TOP_RATED);
-  render(cardListElement, topRatedFilmsList);
-  const topRatedFilmsContainer = topRatedFilmsList.getElement().querySelector('.films-list__container');
-  const mostCommentedFilmsList = new FilmsListView(listTitles.MOST_COMMENTED);
-  render(cardListElement, mostCommentedFilmsList);
-  const mostCommentedFilmsContainer = mostCommentedFilmsList.getElement().querySelector('.films-list__container');
-
-  for (let j = 0; j < EXTRA_LIST_RENDER_COUNT; j++) {
-    renderCard(topRatedFilmsContainer,cardsData[j+5]);
-    renderCard(mostCommentedFilmsContainer, cardsData[j+7]);
-  }
-
-  render(footerStats, new StatsView(cardsData));
-};
-
-renderSite(siteMainElement, cards);
+const moviePresenter = new MovieListPresenter(siteMainElement);
+moviePresenter.init(cards);
+render(footerStats, new StatsView(cards));

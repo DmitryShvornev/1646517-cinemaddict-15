@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 
 export const CARDS_NUMBER = 17;
 
@@ -128,6 +129,7 @@ export const generateCard = () => {
   const isInWatchList = getRandomInteger() === 0;
   const commentsNumber =  getRandomInteger(1,100);
   return {
+    id: nanoid(),
     poster: getRandomArrayElement(POSTERS),
     title: getRandomArrayElement(TITLES),
     rating: getRandomFloat(),
