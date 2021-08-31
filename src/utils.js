@@ -1,4 +1,5 @@
 import AbstractView from './view/abstract.js';
+import dayjs from 'dayjs';
 
 const siteBodyElement = document.querySelector('body');
 
@@ -69,7 +70,7 @@ export const popBodyElement = (component) => {
 };
 
 export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+  const index = items.findIndex(({id}) => id === update.id);
 
   if (index === -1) {
     return items;
@@ -81,3 +82,8 @@ export const updateItem = (items, update) => {
     ...items.slice(index + 1),
   ];
 };
+
+
+export const sortByDate = (cardA, cardB) => (dayjs(cardA.details.releaseDate).diff(dayjs(cardB.details.releaseDate)));
+
+export const sortByRating = (cardA, cardB) => (cardA.rating- cardB.rating);

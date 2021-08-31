@@ -45,7 +45,7 @@ export const createPopupTemplate = (filmCard) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${filmCard.details.releaseDate} ${filmCard.year}</td>
+              <td class="film-details__cell">${filmCard.details.releaseDate}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
