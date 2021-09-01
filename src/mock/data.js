@@ -62,21 +62,6 @@ const COUNTRIES = [
   'India',
 ];
 
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
 const NAMES = [
   'Jim Morrison',
   'Hugh Jackman',
@@ -100,18 +85,22 @@ const getRandomFloat = (first = 5.0, last = 10.0, fractionDegree = 1) => {
 
 const getRandomArrayElement = (elements) => (elements[getRandomInteger(0, elements.length - 1)]);
 
-const generateCardDetails = () => ({
-  director: getRandomArrayElement(NAMES),
-  writers: getRandomArrayElement(NAMES),
-  actors: getRandomArrayElement(NAMES),
-  releaseDate: `${getRandomInteger(1,30)} ${getRandomArrayElement(MONTHS)}`,
-  country: getRandomArrayElement(COUNTRIES),
-});
+const generateCardDetails = () => {
+  const maxYearsGap = 7;
+  const yearsGap = getRandomInteger(-2 * maxYearsGap, -maxYearsGap);
+  return {
+    director: getRandomArrayElement(NAMES),
+    writers: getRandomArrayElement(NAMES),
+    actors: getRandomArrayElement(NAMES),
+    releaseDate: `${dayjs().add(yearsGap, 'years').format('D MMMM YYYY')}`,
+    country: getRandomArrayElement(COUNTRIES),
+  };
+};
 
 const generateComment = () => {
   const maxDaysGap = 7;
   const daysGap = getRandomInteger(-maxDaysGap, maxDaysGap);
-  const date = dayjs().add(daysGap, 'day').toDate();
+  const date = dayjs().add(daysGap, 'day').format('D MMMM YYYY');
   return {
     text: getRandomArrayElement(DESCRIPTIONS),
     emotion: getRandomArrayElement(EMOTIONS),

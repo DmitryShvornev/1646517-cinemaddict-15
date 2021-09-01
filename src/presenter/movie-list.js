@@ -3,9 +3,10 @@ import CardListView from '../view/card-list.js';
 import NoCardView from '../view/no-card.js';
 import FilmsListView from '../view/films-list.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
-import {render, remove, RenderPosition, updateItem} from '../utils.js';
+import {render, remove, RenderPosition, updateItem, sortByDate, sortByRating} from '../utils.js';
 import CardPresenter from './movie.js';
 import {listTitles} from '../view/films-list.js';
+import {SortType} from '../view/sort-menu.js';
 
 const LIST_RENDER_COUNT = 5;
 const EXTRA_LIST_RENDER_COUNT = 2;
@@ -20,27 +21,58 @@ export default class MovieListPresenter {
     this._showMoreButtonComponent = new ShowMoreButtonView();
     this._renderedCardsCount = LIST_RENDER_COUNT;
     this._cardPresenter = new Map();
+    this._currentSortType = SortType.DEFAULT;
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleCardChange = this._handleCardChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(cards) {
     this._cards = cards.slice();
+    this._sourcedCards = cards.slice();
     this._renderMovieList();
+    this._renderExtraMovieList();
   }
 
   _handleCardChange(updatedCard) {
     this._cards = updateItem(this._cards, updatedCard);
+    this._sourcedCards = updateItem(this._sourcedCards, updatedCard);
     this._cardPresenter.get(updatedCard.id).init(updatedCard);
+  }
+
+  _sortCards(sortType) {
+    switch (sortType) {
+      case SortType.DATE:
+        this._cards.sort(sortByDate);
+        break;
+      case SortType.RATING:
+        this._cards.sort(sortByRating);
+        break;
+      default:
+        this._cards = this._sourcedCards.slice();
+    }
+
+    this._currentSortType = sortType;
   }
 
   _handleModeChange() {
     this._cardPresenter.forEach((presenter) => presenter.resetView());
   }
 
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+    this._sortCards(sortType);
+    this._clearMovieList();
+    this._renderMovieList();
+    this._renderExtraMovieList();
+  }
+
   _renderSortMenu(){
     render(this._container, this._sortComponent);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderCard(cardListElement, card) {
@@ -92,16 +124,28 @@ export default class MovieListPresenter {
     if (this._cards.length > LIST_RENDER_COUNT) {
       this._renderShowMoreButton();
     }
-    const topRatedFilmsList = new FilmsListView(listTitles.TOP_RATED);
-    render(cardListElement, topRatedFilmsList);
-    const topRatedFilmsContainer = topRatedFilmsList.getElement().querySelector('.films-list__container');
-    const mostCommentedFilmsList = new FilmsListView(listTitles.MOST_COMMENTED);
-    render(cardListElement, mostCommentedFilmsList);
-    const mostCommentedFilmsContainer = mostCommentedFilmsList.getElement().querySelector('.films-list__container');
+  }
+
+  _renderExtraMovieList() {
+    this._topRatedFilmsListComponent = new FilmsListView(listTitles.TOP_RATED);
+    render(this._container.querySelector('.films'), this._topRatedFilmsListComponent);
+    const topRatedFilmsContainer = this._topRatedFilmsListComponent.getElement().querySelector('.films-list__container');
+    this._mostCommentedFilmsListComponent = new FilmsListView(listTitles.MOST_COMMENTED);
+    render(this._container.querySelector('.films'), this._mostCommentedFilmsListComponent);
+    const mostCommentedFilmsContainer = this._mostCommentedFilmsListComponent.getElement().querySelector('.films-list__container');
 
     for (let j = 0; j < EXTRA_LIST_RENDER_COUNT; j++) {
       this._renderCard(topRatedFilmsContainer,this._cards[j+5]);
       this._renderCard(mostCommentedFilmsContainer, this._cards[j+7]);
     }
+  }
+
+  _clearMovieList() {
+    this._cardPresenter.forEach((presenter) => presenter.destroy());
+    this._cardPresenter.clear();
+    this._renderedCardsCount = LIST_RENDER_COUNT;
+    remove(this._showMoreButtonComponent);
+    remove(this._topRatedFilmsListComponent);
+    remove(this._mostCommentedFilmsListComponent);
   }
 }
