@@ -1,6 +1,16 @@
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 import CommentsView from './comments.js';
 import PopupControlsView from './popup-controls.js';
+
+const EMOJI_SIZE = 55;
+
+const createEmojiTemplate = (value) => {
+  const emoji = document.createElement('img');
+  emoji.width = EMOJI_SIZE;
+  emoji.height = EMOJI_SIZE;
+  emoji.src = `./images/emoji/${value}.png`;
+  return emoji;
+};
 
 export const createPopupTemplate = (filmCard) => {
   const popupControlsTemplate = new PopupControlsView(filmCard).getTemplate();
@@ -116,7 +126,7 @@ export const createPopupTemplate = (filmCard) => {
 </section>`;
 };
 
-export default class PopupView extends AbstractView {
+export default class PopupView extends SmartView {
   constructor(card) {
     super();
     this._card = card;
@@ -124,6 +134,7 @@ export default class PopupView extends AbstractView {
     this._addToFavoritesClickHandler = this._addToFavoritesClickHandler.bind(this);
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
     this._alreadyWatchedClickHandler = this._alreadyWatchedClickHandler.bind(this);
+    this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -148,6 +159,30 @@ export default class PopupView extends AbstractView {
   _addToFavoritesClickHandler(evt) {
     evt.preventDefault();
     this._callback.addToFavoritesClick();
+  }
+
+  _emojiClickHandler(evt) {
+    const selectedEmojiContainer = document.querySelector('.film-details__add-emoji-label');
+    selectedEmojiContainer.innerHTML = '';
+    if (evt.target.matches('input')) {
+      selectedEmojiContainer.appendChild(createEmojiTemplate(evt.target.value));
+    }
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._emojiClickHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setCloseButtonHandler(this._callback.closeButton);
+    this.setAddToFavoritesClickHandler(this._callback.addToFavoritesClick);
+    this.setAddToWatchListClickHandler(this._callback.addToWatchListClick);
+    this.setAlreadyWatchedClickHandler(this._callback.alreadyWatchedClick);
+  }
+
+  setInnerHandlers() {
+    this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._emojiClickHandler);
   }
 
   setCloseButtonHandler(callback) {

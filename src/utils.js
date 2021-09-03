@@ -75,15 +75,12 @@ export const updateItem = (items, update) => {
   if (index === -1) {
     return items;
   }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
+  const updatedItems = items.slice();
+  updatedItems[index] = update;
+  return updatedItems;
 };
 
 
 export const sortByDate = (cardA, cardB) => (dayjs(cardA.details.releaseDate).diff(dayjs(cardB.details.releaseDate)));
 
-export const sortByRating = (cardA, cardB) => (cardA.rating- cardB.rating);
+export const sortByRating = (cardA, cardB) => (cardA.rating - cardB.rating);
