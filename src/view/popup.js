@@ -5,16 +5,17 @@ import PopupControlsView from './popup-controls.js';
 const EMOJI_SIZE = 55;
 
 const createEmojiTemplate = (value) => {
-  const emoji = document.createElement('img');
-  emoji.width = EMOJI_SIZE;
-  emoji.height = EMOJI_SIZE;
-  emoji.src = `./images/emoji/${value}.png`;
-  return emoji;
+  if (!value) {
+    return '';
+  } else {
+    return `<img src="./images/emoji/${value}.png" width="${EMOJI_SIZE}" height="${EMOJI_SIZE}" alt="emoji">`;
+  }
 };
 
 export const createPopupTemplate = (filmCard) => {
   const popupControlsTemplate = new PopupControlsView(filmCard).getTemplate();
   const commentsTemplate = new CommentsView(filmCard).getTemplate();
+  const emojiTemplate = createEmojiTemplate(filmCard.emoji);
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
@@ -92,7 +93,7 @@ export const createPopupTemplate = (filmCard) => {
         </ul>
 
         <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">${emojiTemplate}</div>
 
           <label class="film-details__comment-label">
             <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -130,15 +131,17 @@ export default class PopupView extends SmartView {
   constructor(card) {
     super();
     this._card = card;
+    this._data = PopupView.parseCardToData(this._card);
     this._closeButtonHandler = this._closeButtonHandler.bind(this);
     this._addToFavoritesClickHandler = this._addToFavoritesClickHandler.bind(this);
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
     this._alreadyWatchedClickHandler = this._alreadyWatchedClickHandler.bind(this);
+    this._emojiClickHandler = this._emojiClickHandler.bind(this);
     this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createPopupTemplate(this._card);
+    return createPopupTemplate(this._data);
   }
 
   _closeButtonHandler(evt) {
@@ -162,10 +165,10 @@ export default class PopupView extends SmartView {
   }
 
   _emojiClickHandler(evt) {
-    const selectedEmojiContainer = document.querySelector('.film-details__add-emoji-label');
-    selectedEmojiContainer.innerHTML = '';
     if (evt.target.matches('input')) {
-      selectedEmojiContainer.appendChild(createEmojiTemplate(evt.target.value));
+      this.updateData({
+        emoji: evt.target.value,
+      });
     }
   }
 
@@ -179,10 +182,6 @@ export default class PopupView extends SmartView {
     this.setAddToFavoritesClickHandler(this._callback.addToFavoritesClick);
     this.setAddToWatchListClickHandler(this._callback.addToWatchListClick);
     this.setAlreadyWatchedClickHandler(this._callback.alreadyWatchedClick);
-  }
-
-  setInnerHandlers() {
-    this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._emojiClickHandler);
   }
 
   setCloseButtonHandler(callback) {
@@ -203,5 +202,15 @@ export default class PopupView extends SmartView {
   setAddToFavoritesClickHandler(callback) {
     this._callback.addToFavoritesClick = callback;
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._addToFavoritesClickHandler);
+  }
+
+  static parseCardToData(card) {
+    return Object.assign(
+      {},
+      card,
+      {
+        emoji: '',
+      },
+    );
   }
 }
