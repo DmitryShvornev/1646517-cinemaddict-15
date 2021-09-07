@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import {nanoid} from 'nanoid';
 
 export const CARDS_NUMBER = 17;
+dayjs.extend(relativeTime);
 
 const TITLES = [
   'Made for each other',
@@ -92,7 +94,7 @@ const generateCardDetails = () => {
     director: getRandomArrayElement(NAMES),
     writers: getRandomArrayElement(NAMES),
     actors: getRandomArrayElement(NAMES),
-    releaseDate: `${dayjs().add(yearsGap, 'years').format('D MMMM YYYY')}`,
+    releaseDate: `${dayjs().add(yearsGap, 'years').format('DD MMMM YYYY')}`,
     country: getRandomArrayElement(COUNTRIES),
   };
 };
@@ -100,7 +102,7 @@ const generateCardDetails = () => {
 const generateComment = () => {
   const maxDaysGap = 7;
   const daysGap = getRandomInteger(-maxDaysGap, maxDaysGap);
-  const date = dayjs().add(daysGap, 'day').format('D MMMM YYYY');
+  const date = dayjs().add(daysGap, 'day').fromNow();
   return {
     text: getRandomArrayElement(DESCRIPTIONS),
     emotion: getRandomArrayElement(EMOTIONS),
@@ -124,7 +126,7 @@ export const generateCard = () => {
     rating: getRandomFloat(),
     year: getRandomInteger(1931, 2021),
     description: getRandomArrayElement(DESCRIPTIONS),
-    duration: `${getRandomInteger(1,3)}h ${getRandomInteger(0,59)}m`,
+    duration: `${dayjs().add(getRandomInteger(1,3), 'hours').format('h')}h ${dayjs().add(getRandomInteger(0,59), 'minutes').format('mm')}m`,
     commentsNumber,
     comments: generateCommentsList(commentsNumber),
     genre: getRandomArrayElement(GENRES),
