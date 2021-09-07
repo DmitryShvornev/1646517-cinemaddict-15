@@ -96,38 +96,14 @@ export default class CardPresenter {
   }
 
   _handleAddToWatchListClick() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._card,
-        {
-          isInWatchList: !this._card.isInWatchList,
-        },
-      ),
-    );
+    this._changeData({...this._card, isInWatchList: !this._card.isInWatchList});
   }
 
   _handleAlreadyWatchedClick() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._card,
-        {
-          isAlreadyWatched: !this._card.isAlreadyWatched,
-        },
-      ),
-    );
+    this._changeData({...this._card, isAlreadyWatched: !this._card.isAlreadyWatched});
   }
 
   _handleAddToFavoritesClick() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._card,
-        {
-          isInFavorites: !this._card.isInFavorites,
-        },
-      ),
-    );
+    this._changeData({...this._card, isInFavorites: !this._card.isInFavorites});
   }
 }
