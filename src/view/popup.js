@@ -7,9 +7,8 @@ const EMOJI_SIZE = 55;
 const createEmojiTemplate = (value) => {
   if (!value) {
     return '';
-  } else {
-    return `<img src="./images/emoji/${value}.png" width="${EMOJI_SIZE}" height="${EMOJI_SIZE}" alt="emoji">`;
   }
+  return `<img src="./images/emoji/${value}.png" width="${EMOJI_SIZE}" height="${EMOJI_SIZE}" alt="emoji">`;
 };
 
 export const createPopupTemplate = (filmCard) => {
@@ -130,8 +129,7 @@ export const createPopupTemplate = (filmCard) => {
 export default class PopupView extends SmartView {
   constructor(card) {
     super();
-    this._card = card;
-    this._data = PopupView.parseCardToData(this._card);
+    this._data = PopupView.parseCardToData(card);
     this._closeButtonHandler = this._closeButtonHandler.bind(this);
     this._addToFavoritesClickHandler = this._addToFavoritesClickHandler.bind(this);
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
@@ -169,6 +167,7 @@ export default class PopupView extends SmartView {
       this.updateData({
         emoji: evt.target.value,
       });
+      evt.target.checked = true;
     }
   }
 
@@ -205,12 +204,6 @@ export default class PopupView extends SmartView {
   }
 
   static parseCardToData(card) {
-    return Object.assign(
-      {},
-      card,
-      {
-        emoji: '',
-      },
-    );
+    return {...card, emoji: ''};
   }
 }
