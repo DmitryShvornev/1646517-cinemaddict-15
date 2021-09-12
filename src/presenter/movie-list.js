@@ -33,12 +33,12 @@ export default class MovieListPresenter {
     this._currentSortType = SortType.DEFAULT;
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
-    this._handlePopupAction = this._handlePopupAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._model.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+    this._commentsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -59,7 +59,7 @@ export default class MovieListPresenter {
     return filteredTasks;
   }
 
-  _handleViewAction(actionType, updateType, update) {
+  _handleViewAction(actionType, updateType, update, innerUpdate = null) {
     switch (actionType) {
       case UserAction.UPDATE_CARD:
         this._model.updateCard(updateType, update);
@@ -70,11 +70,6 @@ export default class MovieListPresenter {
       case UserAction.DELETE_CARD:
         this._model.deleteCard(updateType, update);
         break;
-    }
-  }
-
-  _handlePopupAction(actionType, updateType, update, innerUpdate) {
-    switch (actionType) {
       case UserAction.ADD_COMMENT:
         this._commentsModel.addComment(updateType, update, innerUpdate);
         break;

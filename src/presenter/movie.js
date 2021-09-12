@@ -24,6 +24,8 @@ export default class CardPresenter {
     this._handleAddToFavoritesClick = this._handleAddToFavoritesClick.bind(this);
     this._handleAddToWatchListClick = this._handleAddToWatchListClick.bind(this);
     this._handleAlreadyWatchedClick = this._handleAlreadyWatchedClick.bind(this);
+    this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
+    this._handleAddCommentClick = this._handleAddCommentClick.bind(this);
   }
 
   init(card) {
@@ -45,6 +47,8 @@ export default class CardPresenter {
     this._popupComponent.setAddToFavoritesClickHandler(this._handleAddToFavoritesClick);
     this._popupComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
     this._popupComponent.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
+    this._popupComponent.setDeleteClickHandler(this._handleDeleteCommentClick);
+    this._popupComponent.setAddCommentHandler(this._handleAddCommentClick);
     if (prevCardComponent === null || prevPopupComponent === null) {
       render(this._container, this._cardComponent);
       return;
@@ -106,5 +110,13 @@ export default class CardPresenter {
 
   _handleAddToFavoritesClick() {
     this._changeData(UserAction.UPDATE_CARD, UpdateType.PATCH, {...this._card, isInFavorites: !this._card.isInFavorites});
+  }
+
+  _handleAddCommentClick(comment) {
+    this._changeData(UserAction.ADD_COMMENT, UpdateType.PATCH, {...this._card}, comment);
+  }
+
+  _handleDeleteCommentClick(comment) {
+    this._changeData(UserAction.DELETE_COMMENT, UpdateType.PATCH, {...this._card}, comment);
   }
 }

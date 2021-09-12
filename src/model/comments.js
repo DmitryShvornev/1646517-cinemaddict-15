@@ -3,6 +3,7 @@ import AbstractObserver from '../abstract-observer.js';
 export default class CommentsModel extends AbstractObserver {
   constructor(cards) {
     super();
+    this._cards = cards;
     this._data = cards.slice().map((card) => card.comments);
   }
 
@@ -17,7 +18,13 @@ export default class CommentsModel extends AbstractObserver {
   addComment(updateType, update, innerUpdate) {
     const index = this._cards.findIndex((card) => card.id === update.id);
     this._data[index] = [...this._data[index], innerUpdate];
-    this._notify(updateType);
+    update.comments = this._data[index];
+    this._cards = [
+      ...this._cards.slice(0, index),
+      update,
+      ...this._cards.slice(index + 1),
+    ];
+    this._notify(updateType, update);
   }
 
   deleteComment(updateType, update, innerUpdate) {
@@ -29,7 +36,13 @@ export default class CommentsModel extends AbstractObserver {
     }
 
     this._data[index] = [...this._data[index].slice(0, subIndex), ...this._data[index].slice(subIndex + 1)];
+    update.comments = this._data[index];
+    this._cards = [
+      ...this._cards.slice(0, index),
+      update,
+      ...this._cards.slice(index + 1),
+    ];
 
-    this._notify(updateType);
+    this._notify(updateType, update);
   }
 }
