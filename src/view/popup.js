@@ -1,6 +1,7 @@
 import SmartView from './smart.js';
 import CommentsView from './comments.js';
 import PopupControlsView from './popup-controls.js';
+import he from 'he';
 
 const EMOJI_SIZE = 55;
 
@@ -171,8 +172,15 @@ export default class PopupView extends SmartView {
     }
   }
 
+  _deleteClickHandler(evt) {
+    if (evt.target.matches('button')){
+      //заглушка
+    }
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._emojiClickHandler);
+    this.getElement().querySelector('.film-details__comment-input').addEventListener('input', (evt) => {evt.target.value = he.encode(evt.target.value);});
   }
 
   restoreHandlers() {
@@ -201,6 +209,11 @@ export default class PopupView extends SmartView {
   setAddToFavoritesClickHandler(callback) {
     this._callback.addToFavoritesClick = callback;
     this.getElement().querySelector('.film-details__control-button--favorite').addEventListener('click', this._addToFavoritesClickHandler);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.film-details__comments-list').addEventListener('click', this._deleteClickHandler);
   }
 
   static parseCardToData(card) {

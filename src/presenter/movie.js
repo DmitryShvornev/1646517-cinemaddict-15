@@ -1,6 +1,7 @@
 import CardView from '../view/card.js';
 import PopupView from '../view/popup.js';
 import {render, pushBodyElement, popBodyElement, remove, replace} from '../utils.js';
+import {UserAction, UpdateType} from '../const.js';
 
 const popupMode = {
   OPENED: 'OPENED',
@@ -96,14 +97,14 @@ export default class CardPresenter {
   }
 
   _handleAddToWatchListClick() {
-    this._changeData({...this._card, isInWatchList: !this._card.isInWatchList});
+    this._changeData(UserAction.UPDATE_CARD, UpdateType.PATCH, {...this._card, isInWatchList: !this._card.isInWatchList});
   }
 
   _handleAlreadyWatchedClick() {
-    this._changeData({...this._card, isAlreadyWatched: !this._card.isAlreadyWatched});
+    this._changeData(UserAction.UPDATE_CARD, UpdateType.PATCH, {...this._card, isAlreadyWatched: !this._card.isAlreadyWatched});
   }
 
   _handleAddToFavoritesClick() {
-    this._changeData({...this._card, isInFavorites: !this._card.isInFavorites});
+    this._changeData(UserAction.UPDATE_CARD, UpdateType.PATCH, {...this._card, isInFavorites: !this._card.isInFavorites});
   }
 }

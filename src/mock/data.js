@@ -104,6 +104,7 @@ const generateComment = () => {
   const daysGap = getRandomInteger(-maxDaysGap, maxDaysGap);
   const date = dayjs().add(daysGap, 'day').fromNow();
   return {
+    id: nanoid(),
     text: getRandomArrayElement(DESCRIPTIONS),
     emotion: getRandomArrayElement(EMOTIONS),
     author: getRandomArrayElement(NAMES),

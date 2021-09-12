@@ -1,7 +1,7 @@
 import AbstractView from './abstract.js';
-import {cardsToFilterMap} from './menu.js';
+import {FilterMap, FilterType} from '../const.js';
 
-export const createStatsTemplate = (cards) => `<p>${cardsToFilterMap.all(cards)} movies inside</p>`;
+export const createStatsTemplate = (cards) => `<p>${FilterMap[FilterType.ALL](cards)} movies inside</p>`;
 
 export default class StatsView extends AbstractView {
   constructor(cards) {

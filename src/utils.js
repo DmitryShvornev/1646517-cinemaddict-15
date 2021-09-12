@@ -1,12 +1,8 @@
 import AbstractView from './view/abstract.js';
 import dayjs from 'dayjs';
+import {RenderPosition} from './const.js';
 
 const siteBodyElement = document.querySelector('body');
-
-export const RenderPosition = {
-  AFTER_BEGIN: 'afterbegin',
-  BEFORE_END: 'beforeend',
-};
 
 export const render = (container, child, place = RenderPosition.BEFORE_END) => {
 
@@ -46,6 +42,10 @@ export const replace = (newChild, oldChild) => {
 };
 
 export const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
   if(!(component instanceof AbstractView)) {
     throw new Error('Can only remove components.');
   }
@@ -79,7 +79,6 @@ export const updateItem = (items, update) => {
   updatedItems[index] = update;
   return updatedItems;
 };
-
 
 export const sortByDate = (cardA, cardB) => (dayjs(cardA.details.releaseDate).diff(dayjs(cardB.details.releaseDate)));
 

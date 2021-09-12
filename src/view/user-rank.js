@@ -1,4 +1,4 @@
-import {cardsToFilterMap} from './menu.js';
+import {FilterMap, FilterType} from '../const.js';
 import AbstractView from './abstract.js';
 
 const LOW_RANK = 'Novice';
@@ -11,7 +11,7 @@ const HIGH_RANK_LIMIT = 20;
 
 export const createUserRankTemplate = (cards) => {
   let rank = '';
-  const watchedFilms = cardsToFilterMap.history(cards);
+  const watchedFilms = FilterMap[FilterType.HISTORY](cards);
   if (watchedFilms > LOW_RANK_LIMIT && watchedFilms <= MIDDLE_RANK_LIMIT) {
     rank = LOW_RANK;
   } else if (watchedFilms > MIDDLE_RANK_LIMIT && watchedFilms <= HIGH_RANK_LIMIT) {
