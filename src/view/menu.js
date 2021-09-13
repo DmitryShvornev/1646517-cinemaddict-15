@@ -1,30 +1,42 @@
 import AbstractView from './abstract.js';
+import {FilterType} from '../const.js';
 
-export const cardsToFilterMap = {
-  all: (cards) => cards.length,
-  watchlist: (cards) => cards.filter((card) => card.isInWatchList).length,
-  history: (cards) => cards.filter((card) => card.isAlreadyWatched).length,
-  favorites: (cards) => cards.filter((card) => card.isInFavorites).length,
-};
 
-export const createMenuTemplate = (cards) => (`<nav class="main-navigation">
+export const createMenuTemplate = (cards, filters) => (`<nav class="main-navigation">
   <div class="main-navigation__items">
-    <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
-    <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">${cardsToFilterMap.watchlist(cards)}</span></a>
-    <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">${cardsToFilterMap.history(cards)}</span></a>
-    <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${cardsToFilterMap.favorites(cards)}</span></a>
+    <a href="#all" class="main-navigation__item main-navigation__item--active" data-filter-type="${FilterType.ALL}">All movies</a>
+    <a href="#watchlist" class="main-navigation__item" data-filter-type="${FilterType.WATCHLIST}">Watchlist <span class="main-navigation__item-count">${filters[FilterType.WATCHLIST]}</span></a>
+    <a href="#history" class="main-navigation__item" data-filter-type="${FilterType.HISTORY}">History <span class="main-navigation__item-count">${filters[FilterType.HISTORY]}</span></a>
+    <a href="#favorites" class="main-navigation__item" data-filter-type="${FilterType.FAVORITES}">Favorites <span class="main-navigation__item-count">${filters[FilterType.FAVORITES]}</span></a>
   </div>
   <a href="#stats" class="main-navigation__additional">Stats</a>
 </nav>`);
 
 
 export default class MenuView extends AbstractView {
-  constructor(cards) {
+  constructor(cards, filters) {
     super();
     this._cards = cards;
+    this._filters = filters;
+    this._filterChangeHandler = this._filterChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createMenuTemplate(this._cards);
+    return createMenuTemplate(this._cards, this._filters);
+  }
+
+  _filterChangeHandler(evt) {
+    if (evt.target.tagName !== 'A') {
+      return;
+    }
+    evt.preventDefault();
+    this.getElement().querySelector('.main-navigation__item--active').classList.remove('main-navigation__item--active');
+    evt.target.classList.add('main-navigation__item--active');
+    this._callback.filterChange(evt.target.dataset.filterType);
+  }
+
+  setFilterChangeHandler(callback) {
+    this._callback.filterChange = callback;
+    this.getElement().querySelector('.main-navigation__items').addEventListener('click', this._filterChangeHandler);
   }
 }
