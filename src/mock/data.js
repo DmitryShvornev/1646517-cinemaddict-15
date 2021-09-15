@@ -120,6 +120,7 @@ const generateCommentsList = (number) => {
 export const generateCard = () => {
   const isInWatchList = getRandomInteger() === 0;
   const commentsNumber =  getRandomInteger(1,100);
+  const daysGap = getRandomInteger(1,367);
   return {
     id: nanoid(),
     poster: getRandomArrayElement(POSTERS),
@@ -127,7 +128,10 @@ export const generateCard = () => {
     rating: getRandomFloat(),
     year: getRandomInteger(1931, 2021),
     description: getRandomArrayElement(DESCRIPTIONS),
-    duration: `${dayjs().add(getRandomInteger(1,3), 'hours').format('h')}h ${dayjs().add(getRandomInteger(0,59), 'minutes').format('mm')}m`,
+    duration: {
+      hours: dayjs().add(getRandomInteger(1,3), 'hours').format('h'),
+      minutes: dayjs().add(getRandomInteger(0,59), 'minutes').format('m'),
+    },
     commentsNumber,
     comments: generateCommentsList(commentsNumber),
     genre: getRandomArrayElement(GENRES),
@@ -136,5 +140,6 @@ export const generateCard = () => {
     isInFavorites: !isInWatchList,
     age: getRandomArrayElement(AGES),
     details: generateCardDetails(),
+    watchingDate: dayjs().subtract(daysGap, 'day').toDate(),
   };
 };

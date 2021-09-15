@@ -36,3 +36,8 @@ export const FilterMap = {
   [FilterType.HISTORY]: (cards) => cards.filter((card) => card.isAlreadyWatched).length,
   [FilterType.FAVORITES]: (cards) => cards.filter((card) => card.isInFavorites).length,
 };
+
+export const MenuItem = {
+  FILTER: 'FILTER',
+  STATS: 'STATS',
+};

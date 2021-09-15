@@ -11,19 +11,26 @@ export default class MenuPresenter {
     this._handleFilterChange = this._handleFilterChange.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._dataModel.addObserver(this._handleModelEvent);
+    this._callback = {};
   }
 
   init() {
     const filters = this._getFilters();
     const prevFilterComponent = this._component;
-    this._component = new MenuView(this._dataModel.getCards(), filters);
+    this._component = new MenuView(this._dataModel.getCards(), filters, this._model.getFilter());
     this._component.setFilterChangeHandler(this._handleFilterChange);
     if (prevFilterComponent === null) {
       render(this._container, this._component);
       return;
     }
+    this._component.setMenuClickHandler(this._callback.menuClick);
     replace(this._component, prevFilterComponent);
     remove(prevFilterComponent);
+  }
+
+  setMenuHandler(callback) {
+    this._component.setMenuClickHandler(callback);
+    this._callback.menuClick = callback;
   }
 
   _handleModelEvent() {

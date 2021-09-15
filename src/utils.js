@@ -69,17 +69,6 @@ export const popBodyElement = (component) => {
   siteBodyElement.removeChild(component.getElement());
 };
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex(({id}) => id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-  const updatedItems = items.slice();
-  updatedItems[index] = update;
-  return updatedItems;
-};
-
 export const sortByDate = (cardA, cardB) => (dayjs(cardA.details.releaseDate).diff(dayjs(cardB.details.releaseDate)));
 
 export const sortByRating = (cardA, cardB) => (cardA.rating - cardB.rating);

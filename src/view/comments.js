@@ -9,7 +9,7 @@ const createCommentsTemplate = ({comments}) => (comments.slice().map((comment) =
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${comment.author}</span>
       <span class="film-details__comment-day">${comment.date}</span>
-      <button class="film-details__comment-delete">Delete</button>
+      <button class="film-details__comment-delete" data-comment-id=${comment.id}>Delete</button>
     </p>
   </div>
 </li>`).join(''));

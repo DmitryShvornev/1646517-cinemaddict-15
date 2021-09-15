@@ -2,6 +2,7 @@ import CardView from '../view/card.js';
 import PopupView from '../view/popup.js';
 import {render, pushBodyElement, popBodyElement, remove, replace} from '../utils.js';
 import {UserAction, UpdateType} from '../const.js';
+import dayjs from 'dayjs';
 
 const popupMode = {
   OPENED: 'OPENED',
@@ -26,6 +27,9 @@ export default class CardPresenter {
     this._handleAlreadyWatchedClick = this._handleAlreadyWatchedClick.bind(this);
     this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
     this._handleAddCommentClick = this._handleAddCommentClick.bind(this);
+    this._handlePopupAddToFavoritesClick = this._handlePopupAddToFavoritesClick.bind(this);
+    this._handlePopupAddToWatchListClick = this._handlePopupAddToWatchListClick.bind(this);
+    this._handlePopupAlreadyWatchedClick = this._handlePopupAlreadyWatchedClick.bind(this);
   }
 
   init(card) {
@@ -44,9 +48,9 @@ export default class CardPresenter {
     this._cardComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
     this._cardComponent.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
     this._popupComponent.setCloseButtonHandler(this._handleCardClose);
-    this._popupComponent.setAddToFavoritesClickHandler(this._handleAddToFavoritesClick);
-    this._popupComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
-    this._popupComponent.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
+    this._popupComponent.setAddToFavoritesClickHandler(this._handlePopupAddToFavoritesClick);
+    this._popupComponent.setAddToWatchListClickHandler(this._handlePopupAddToWatchListClick);
+    this._popupComponent.setAlreadyWatchedClickHandler(this._handlePopupAlreadyWatchedClick);
     this._popupComponent.setDeleteClickHandler(this._handleDeleteCommentClick);
     this._popupComponent.setAddCommentHandler(this._handleAddCommentClick);
     if (prevCardComponent === null || prevPopupComponent === null) {
@@ -101,14 +105,26 @@ export default class CardPresenter {
   }
 
   _handleAddToWatchListClick() {
-    this._changeData(UserAction.UPDATE_CARD, UpdateType.PATCH, {...this._card, isInWatchList: !this._card.isInWatchList});
+    this._changeData(UserAction.UPDATE_CARD, UpdateType.MINOR, {...this._card, isInWatchList: !this._card.isInWatchList});
   }
 
   _handleAlreadyWatchedClick() {
-    this._changeData(UserAction.UPDATE_CARD, UpdateType.PATCH, {...this._card, isAlreadyWatched: !this._card.isAlreadyWatched});
+    this._changeData(UserAction.UPDATE_CARD, UpdateType.MINOR, {...this._card, isAlreadyWatched: !this._card.isAlreadyWatched, watchingDate: dayjs()});
   }
 
   _handleAddToFavoritesClick() {
+    this._changeData(UserAction.UPDATE_CARD, UpdateType.MINOR, {...this._card, isInFavorites: !this._card.isInFavorites});
+  }
+
+  _handlePopupAddToWatchListClick() {
+    this._changeData(UserAction.UPDATE_CARD, UpdateType.PATCH, {...this._card, isInWatchList: !this._card.isInWatchList});
+  }
+
+  _handlePopupAlreadyWatchedClick() {
+    this._changeData(UserAction.UPDATE_CARD, UpdateType.PATCH, {...this._card, isAlreadyWatched: !this._card.isAlreadyWatched, watchingDate: dayjs()});
+  }
+
+  _handlePopupAddToFavoritesClick() {
     this._changeData(UserAction.UPDATE_CARD, UpdateType.PATCH, {...this._card, isInFavorites: !this._card.isInFavorites});
   }
 

@@ -65,7 +65,7 @@ export const createPopupTemplate = (filmCard) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${filmCard.duration}</td>
+              <td class="film-details__cell">${filmCard.duration.hours}h ${filmCard.duration.minutes}m</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
@@ -182,8 +182,8 @@ export default class PopupView extends SmartView {
   _deleteClickHandler(evt) {
     evt.preventDefault();
     if (evt.target.matches('button')){
-      const text = String(evt.target.parentElement.parentElement.querySelector('.film-details__comment-text').innerHTML);
-      const index = this._data.comments.findIndex((comment) => comment.text === text);
+      const id = evt.target.dataset.commentId;
+      const index = this._data.comments.findIndex((comment) => comment.id === id);
       const commentToDelete = this._data.comments[index];
       this._callback.deleteClick(commentToDelete);
     }
