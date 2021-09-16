@@ -5,7 +5,7 @@ export const createCardTemplate = (filmCard) => (`<article class="film-card">
   <p class="film-card__rating">${filmCard.rating}</p>
   <p class="film-card__info">
     <span class="film-card__year">${filmCard.year}</span>
-    <span class="film-card__duration">${filmCard.duration}</span>
+    <span class="film-card__duration">${filmCard.duration.hours}h ${filmCard.duration.minutes}m</span>
     <span class="film-card__genre">${filmCard.genre}</span>
   </p>
   <img src="./images/posters/${filmCard.poster}" alt="" class="film-card__poster">

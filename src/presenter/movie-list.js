@@ -4,59 +4,60 @@ import NoCardView from '../view/no-card.js';
 import FilmsListView from '../view/films-list.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import {render, remove, sortByDate, sortByRating} from '../utils.js';
-import {RenderPosition} from '../const.js';
 import CardPresenter from './movie.js';
-import {listTitles} from '../view/films-list.js';
 import {SortType} from '../const.js';
 import {cardsFilter} from '../model/filters.js';
 import {UserAction, UpdateType, FilterType} from '../const.js';
-import CommentsModel from '../model/comments.js';
 
 const LIST_RENDER_COUNT = 5;
-const EXTRA_LIST_RENDER_COUNT = 2;
 
 export default class MovieListPresenter {
-  constructor(container, model, filterModel) {
+  constructor(container, model, filterModel, commentsModel) {
     this._container = container;
     this._model = model;
     this._filterModel = filterModel;
-    this._currentFilterType = FilterType.ALL;
-    this._commentsModel = new CommentsModel(this._model.getCards());
+    this._commentsModel = commentsModel;
     this._noCardComponent = null;
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
-
     this._cardListComponent = new CardListView();
-    this._filmsListComponent = new FilmsListView(listTitles.ALL);
+    this._filmsListComponent = new FilmsListView();
     this._renderedCardsCount = LIST_RENDER_COUNT;
     this._cardPresenter = new Map();
+    this._currentFilterType = FilterType.ALL;
     this._currentSortType = SortType.DEFAULT;
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-    this._model.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
-    this._commentsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
+    this._commentsModel.addObserver(this._handleModelEvent);
+    this._model.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
     this._renderMovieList();
-    this._renderExtraMovieList();
+  }
+
+  destroy() {
+    this._clearPanel({resetRenderedCardsCount: true, resetSortType: true});
+    this._model.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+    this._commentsModel.removeObserver(this._handleModelEvent);
   }
 
   _getCards() {
     this._currentFilterType = this._filterModel.getFilter();
-    const cards = this._model.getCards();
-    const filteredTasks = cardsFilter[this._currentFilterType](cards);
+    const cards = this._model.getCards().slice();
+    const filteredCards = cardsFilter[this._currentFilterType](cards);
     switch (this._currentSortType) {
       case SortType.DATE:
-        return filteredTasks.sort(sortByDate);
+        return filteredCards.sort(sortByDate);
       case SortType.RATING:
-        return filteredTasks.sort(sortByRating);
+        return filteredCards.sort(sortByRating);
     }
-    return filteredTasks;
+    return filteredCards;
   }
 
   _handleViewAction(actionType, updateType, update, innerUpdate = null) {
@@ -86,13 +87,11 @@ export default class MovieListPresenter {
         break;
       case UpdateType.MINOR:
         this._clearPanel();
-        this._renderMovieList();
-        this._renderExtraMovieList();
+        this._renderMovieList({resetRenderedCardsCount: true});
         break;
       case UpdateType.MAJOR:
         this._clearPanel({resetRenderedCardsCount: true, resetSortType: true});
         this._renderMovieList();
-        this._renderExtraMovieList();
         break;
     }
   }
@@ -108,7 +107,6 @@ export default class MovieListPresenter {
     this._currentSortType = sortType;
     this._clearPanel({resetRenderedCardsCount: true});
     this._renderMovieList();
-    this._renderExtraMovieList();
   }
 
   _renderSortMenu(){
@@ -133,7 +131,7 @@ export default class MovieListPresenter {
 
   _renderNoCard() {
     this._noCardComponent = new NoCardView(this._currentFilterType);
-    render(this._container, this._noCardComponent, RenderPosition.AFTER_BEGIN);
+    render(this._container, this._noCardComponent);
   }
 
   _handleShowMoreButtonClick() {
@@ -142,9 +140,7 @@ export default class MovieListPresenter {
     this._getCards()
       .slice(this._renderedCardsCount, newRenderedCardCount)
       .forEach((card) => this._renderCard(this._filmsListComponent.getElement().querySelector('.films-list__container'), card));
-
     this._renderedCardsCount += LIST_RENDER_COUNT;
-
     if (this._renderedCardsCount >= cardCount) {
       remove(this._showMoreButtonComponent);
     }
@@ -160,9 +156,14 @@ export default class MovieListPresenter {
   }
 
   _renderMovieList() {
-    const cardCount = this._getCards().length;
+    const cards = this._getCards();
+    this._commentsModel.setData(cards);
+    const cardCount = cards.length;
     if (cardCount === 0) {
       return this._renderNoCard();
+    }
+    if (this._noCardComponent !== null) {
+      remove(this._noCardComponent);
     }
     this._renderSortMenu();
     this._renderCardList();
@@ -170,59 +171,23 @@ export default class MovieListPresenter {
     const filmsListElement = this._filmsListComponent.getElement();
     render(cardListElement, filmsListElement);
     const filmsListContainer = filmsListElement.querySelector('.films-list__container');
-
-    for (let i = 0; i < Math.min(cardCount, LIST_RENDER_COUNT); i++) {
-      this._renderCard(filmsListContainer, this._getCards().slice()[i]);
-    }
-
-    if (cardCount > LIST_RENDER_COUNT) {
+    cards.slice(0, Math.min(cardCount, this._renderedCardsCount)).forEach((card) => this._renderCard(filmsListContainer, card));
+    if (cardCount > this._renderedCardsCount) {
       this._renderShowMoreButton();
     }
-  }
-
-  _renderExtraMovieList() {
-    this._topRatedFilmsListComponent = new FilmsListView(listTitles.TOP_RATED);
-    render(this._container.querySelector('.films'), this._topRatedFilmsListComponent);
-    const topRatedFilmsContainer = this._topRatedFilmsListComponent.getElement().querySelector('.films-list__container');
-    this._mostCommentedFilmsListComponent = new FilmsListView(listTitles.MOST_COMMENTED);
-    render(this._container.querySelector('.films'), this._mostCommentedFilmsListComponent);
-    const mostCommentedFilmsContainer = this._mostCommentedFilmsListComponent.getElement().querySelector('.films-list__container');
-
-    for (let j = 0; j < EXTRA_LIST_RENDER_COUNT; j++) {
-      this._renderCard(topRatedFilmsContainer,this._getCards().slice()[j+5]);
-      this._renderCard(mostCommentedFilmsContainer, this._getCards().slice()[j+5]);
-    }
-  }
-
-  _clearMovieList() {
-    this._cardPresenter.forEach((presenter) => presenter.destroy());
-    this._cardPresenter.clear();
-    this._renderedCardsCount = LIST_RENDER_COUNT;
-    if (this._noCardComponent) {
-      remove(this._noCardComponent);
-    }
-    remove(this._showMoreButtonComponent);
-    remove(this._sortComponent);
-    remove(this._topRatedFilmsListComponent);
-    remove(this._mostCommentedFilmsListComponent);
   }
 
   _clearPanel({resetRenderedCardsCount = false, resetSortType = false} = {}) {
     const cardCount = this._getCards().length;
     this._cardPresenter.forEach((presenter) => presenter.destroy());
     this._cardPresenter.clear();
-
     remove(this._sortComponent);
     remove(this._showMoreButtonComponent);
-    remove(this._topRatedFilmsListComponent);
-    remove(this._mostCommentedFilmsListComponent);
-
     if (resetRenderedCardsCount) {
       this._renderedCardsCount = LIST_RENDER_COUNT;
     } else {
       this._renderedCardsCount = Math.min(cardCount, this._renderedCardsCount);
     }
-
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
     }
