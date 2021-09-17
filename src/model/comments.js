@@ -6,9 +6,9 @@ export default class CommentsModel extends AbstractObserver {
     this._data = [];
   }
 
-  setData(cards) {
+  setData(cards, comments) {
     this._cards = cards.slice();
-    this._data = this._cards.map((card) => card.comments);
+    this._data = comments.slice();
   }
 
   getData() {

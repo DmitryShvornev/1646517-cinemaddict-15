@@ -38,7 +38,7 @@ export const createPopupTemplate = (filmCard) => {
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
               <h3 class="film-details__title">${filmCard.title}</h3>
-              <p class="film-details__title-original">Original: ${filmCard.title}</p>
+              <p class="film-details__title-original">Original: ${filmCard.original}</p>
             </div>
 
             <div class="film-details__rating">
@@ -182,8 +182,8 @@ export default class PopupView extends SmartView {
   _deleteClickHandler(evt) {
     evt.preventDefault();
     if (evt.target.matches('button')){
-      const id = evt.target.dataset.commentId;
-      const index = this._data.comments.findIndex((comment) => comment.id === id);
+      const {commentId} = evt.target.dataset;
+      const index = this._data.comments.findIndex(({id}) => id === commentId);
       const commentToDelete = this._data.comments[index];
       this._callback.deleteClick(commentToDelete);
     }

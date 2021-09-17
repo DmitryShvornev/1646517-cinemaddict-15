@@ -44,9 +44,11 @@ export default class MenuView extends AbstractView {
 
   _menuClickHandler(evt) {
     evt.preventDefault();
-    this.getElement().querySelector('.main-navigation__item--active').classList.remove('main-navigation__item--active');
-    evt.target.classList.add('main-navigation__item--active');
-    this._callback.menuClick(evt.target.dataset.control);
+    if (evt.target.matches('a')) {
+      this.getElement().querySelector('.main-navigation__item--active').classList.remove('main-navigation__item--active');
+      evt.target.classList.add('main-navigation__item--active');
+      this._callback.menuClick(evt.target.dataset.control);
+    }
   }
 
   setMenuClickHandler(callback) {

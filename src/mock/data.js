@@ -141,5 +141,6 @@ export const generateCard = () => {
     age: getRandomArrayElement(AGES),
     details: generateCardDetails(),
     watchingDate: dayjs().subtract(daysGap, 'day').toDate(),
+    original: '',
   };
 };
