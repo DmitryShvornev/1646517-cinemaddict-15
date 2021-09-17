@@ -23,7 +23,6 @@ let comments;
 
 const cardsModel = new MoviesModel();
 const commentsModel = new CommentsModel();
-console.log(api.getComments('0'));
 api.getCards()
   .then((cards) => {
     comments = cards.map(({id}) => api.getComments(id));
