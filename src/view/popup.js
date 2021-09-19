@@ -4,7 +4,6 @@ import PopupControlsView from './popup-controls.js';
 import he from 'he';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {nanoid} from 'nanoid';
 
 dayjs.extend(relativeTime);
 
@@ -61,7 +60,7 @@ export const createPopupTemplate = (filmCard, comments) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${filmCard.details.releaseDate}</td>
+              <td class="film-details__cell">${dayjs(filmCard.details.releaseDate).format('DD MMMM YYYY')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
@@ -194,12 +193,8 @@ export default class PopupView extends SmartView {
     if (evt.key === 'Enter' && evt.ctrlKey) {
       const commentText = he.encode(evt.target.value);
       const emoji = this._data.emoji;
-      const currentDate = dayjs().fromNow();
       const commentToAdd = {
-        id: nanoid(),
         emotion: emoji,
-        author: 'Me',
-        date: currentDate,
         text: commentText,
       };
       this._callback.addComment(commentToAdd);

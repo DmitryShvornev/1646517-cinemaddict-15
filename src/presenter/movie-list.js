@@ -71,17 +71,15 @@ export default class MovieListPresenter {
           this._model.updateCard(updateType, response);
         });
         break;
-      case UserAction.ADD_CARD:
-        this._model.addCard(updateType, update);
-        break;
-      case UserAction.DELETE_CARD:
-        this._model.deleteCard(updateType, update);
-        break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(updateType, update, innerUpdate);
+        this._api.addComment(update, innerUpdate).then((response) => {
+          this._commentsModel.addComment(updateType, response, innerUpdate);
+        });
         break;
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(updateType, update, innerUpdate);
+        this._api.deleteComment(update, innerUpdate).then((response) => {
+          this._commentsModel.deleteComment(updateType, response, innerUpdate);
+        });
         break;
     }
   }
@@ -134,6 +132,8 @@ export default class MovieListPresenter {
     //const index = String(this._getCards().findIndex(({id}) => id === card.id));
     const comments = this._commentsModel.getData();
     // Не работает доступ к элементу comments -  ????
+    //console.log(comments);
+    //console.log(comments[index]);
     const cardPresenter = new CardPresenter(cardListElement, this._handleViewAction, this._handleModeChange);
     cardPresenter.init(card, comments);
     this._cardPresenter.set(card.id, cardPresenter);

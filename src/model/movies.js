@@ -1,6 +1,5 @@
 import AbstractObserver from '../abstract-observer.js';
 import {MINUTES_PER_HOUR} from '../view/statistics.js';
-import dayjs from 'dayjs';
 
 export default class MoviesModel extends AbstractObserver {
   constructor() {
@@ -26,20 +25,6 @@ export default class MoviesModel extends AbstractObserver {
     this._notify(updateType, update);
   }
 
-  addCard(updateType, update) {
-    this._cards.unshift(update);
-    this._notify(updateType, update);
-  }
-
-  deleteCard(updateType, update) {
-    const index = this._cards.findIndex((card) => card.id === update.id);
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting card');
-    }
-    this._cards = this._cards.filter(({id}) => id !== index);
-    this._notify(updateType);
-  }
-
   static adaptToClient(card) {
     const adaptedCard = Object.assign(
       {},
@@ -50,12 +35,12 @@ export default class MoviesModel extends AbstractObserver {
         rating: card['film_info']['total_rating'],
         poster: card['film_info']['poster'],
         age: card['film_info']['age_rating'],
-        year: dayjs(card['film_info']['release']['date']).format('YYYY'),
+        year: new Date(card['film_info']['release']['date']),
         details: {
           director: card['film_info']['director'],
-          writers: `${card['film_info']['writers']}`,
-          actors: `${card['film_info']['actors']}`,
-          releaseDate: dayjs(card['film_info']['release']['date']).format('DD MMMM YYYY'),
+          writers: card['film_info']['writers'],
+          actors: card['film_info']['actors'],
+          releaseDate: new Date(card['film_info']['release']['date']),
           country: card['film_info']['release']['release_country'],
         },
         duration : {
@@ -109,7 +94,7 @@ export default class MoviesModel extends AbstractObserver {
           'writers': card.details.writers,
           'actors': card.details.actors,
           'release': {
-            'date': card.details.releaseDate,
+            'date': card.details.releaseDate.toISOString(),
             'release_country': card.details.country,
           },
           'runtime': card.duration.hours * MINUTES_PER_HOUR + card.duration.minutes,

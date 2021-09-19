@@ -1,10 +1,11 @@
 import AbstractView from './abstract.js';
+import dayjs from 'dayjs';
 
 export const createCardTemplate = (filmCard) => (`<article class="film-card">
   <h3 class="film-card__title">${filmCard.title}</h3>
   <p class="film-card__rating">${filmCard.rating}</p>
   <p class="film-card__info">
-    <span class="film-card__year">${filmCard.year}</span>
+    <span class="film-card__year">${dayjs(filmCard.year).format('YYYY')}</span>
     <span class="film-card__duration">${filmCard.duration.hours}h ${filmCard.duration.minutes}m</span>
     <span class="film-card__genre">${filmCard.genre[0]}</span>
   </p>

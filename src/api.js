@@ -3,6 +3,8 @@ import MoviesModel from './model/movies.js';
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 const SuccessHTTPStatusRange = {
@@ -36,6 +38,23 @@ export default class Api {
       headers: new Headers({'Content-Type': 'application/json'}),
     })
       .then(Api.toJSON);
+  }
+
+  addComment(card, comment) {
+    return this._load({
+      url: `comments/${card.id}/${comment.id}`,
+      method: Method.POST,
+      body: JSON.stringify(comment),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    })
+      .then(Api.toJSON);
+  }
+
+  deleteComment(card, comment) {
+    return this._load({
+      url: `comments/${card.id}/${comment.id}`,
+      method: Method.DELETE,
+    });
   }
 
   _load({
