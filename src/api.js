@@ -25,7 +25,7 @@ export default class Api {
   getComments(id) {
     return this._load({url: `comments/${id}`})
       .then((Api.toJSON))
-      .then((comments) => comments.map((item) => item));
+      .then((comments) => comments);
   }
 
   updateCard(card) {

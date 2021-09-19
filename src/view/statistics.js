@@ -21,7 +21,7 @@ const TimeFilterType = {
 
 const makeItemsUniq = (items) => [...new Set(items)];
 
-const countCardsByGenre = (cards, genre) => cards.filter((card) => card.genre === genre).length;
+const countCardsByGenre = (cards, genre) => cards.filter((card) => card.genre.includes(genre)).length;
 
 const countWatchedFilmsInDateRange = (cards, dateFrom, dateTo) => {
   if (dateFrom === null) {
@@ -60,7 +60,9 @@ const calculateDate = (filter) => {
 };
 
 const processGenres = (cards) => {
-  const genres = cards.map((card) => card.genre);
+  const genresLists = cards.map((card) => card.genre);
+  const genres = [];
+  genresLists.forEach((item) => item.forEach((subItem) => genres.push(subItem)));
   const uniqGenres = makeItemsUniq(genres);
   const cardsByGenreCounts = uniqGenres.map((genre) => countCardsByGenre(cards, genre));
   const maxIndex = cardsByGenreCounts.findIndex((item) => item === Math.max(...cardsByGenreCounts));

@@ -131,8 +131,11 @@ export default class MovieListPresenter {
   }
 
   _renderCard(cardListElement, card) {
+    //const index = String(this._getCards().findIndex(({id}) => id === card.id));
+    const comments = this._commentsModel.getData();
+    // Не работает доступ к элементу comments -  ????
     const cardPresenter = new CardPresenter(cardListElement, this._handleViewAction, this._handleModeChange);
-    cardPresenter.init(card);
+    cardPresenter.init(card, comments);
     this._cardPresenter.set(card.id, cardPresenter);
   }
 

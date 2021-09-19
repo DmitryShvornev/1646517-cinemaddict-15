@@ -9,9 +9,8 @@ import StatisticsView from './view/statistics.js';
 import {MenuItem, UpdateType} from './const.js';
 import CommentsModel from './model/comments.js';
 import Api from './api.js';
+import {END_POINT, AUTHORIZATION} from './const.js';
 
-const AUTHORIZATION = 'Basic fh4a412gs31662j';
-const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';
 
 const api = new Api(END_POINT, AUTHORIZATION);
 
@@ -19,21 +18,8 @@ const siteMainElement = document.querySelector('.main');
 const siteHeaderElement = document.querySelector('.header');
 const footerStats = document.querySelector('.footer__statistics');
 
-let comments;
-
 const cardsModel = new MoviesModel();
 const commentsModel = new CommentsModel();
-api.getCards()
-  .then((cards) => {
-    comments = cards.map(({id}) => api.getComments(id));
-    cardsModel.setCards(UpdateType.INIT, cards);
-    commentsModel.setData(cards, comments);
-    render(siteHeaderElement, new UserRankView(cards));
-    render(footerStats, new StatsView(cards));
-  })
-  .catch(() => {
-    cardsModel.setCards(UpdateType.INIT, []);
-  });
 
 
 const menuModel = new MenuModel();
@@ -64,3 +50,11 @@ const handleSiteMenuClick = (menuItem) => {
 };
 
 menuPresenter.setMenuHandler(handleSiteMenuClick);
+
+api.getCards()
+  .then((cards) => {
+    cardsModel.setCards(UpdateType.INIT, cards);
+    commentsModel.setData(cards);
+    render(siteHeaderElement, new UserRankView(cards));
+    render(footerStats, new StatsView(cards));
+  });

@@ -1,5 +1,6 @@
 import AbstractObserver from '../abstract-observer.js';
 import {MINUTES_PER_HOUR} from '../view/statistics.js';
+import dayjs from 'dayjs';
 
 export default class MoviesModel extends AbstractObserver {
   constructor() {
@@ -49,18 +50,19 @@ export default class MoviesModel extends AbstractObserver {
         rating: card['film_info']['total_rating'],
         poster: card['film_info']['poster'],
         age: card['film_info']['age_rating'],
+        year: dayjs(card['film_info']['release']['date']).format('YYYY'),
         details: {
           director: card['film_info']['director'],
           writers: `${card['film_info']['writers']}`,
           actors: `${card['film_info']['actors']}`,
-          releaseDate: card['film_info']['release']['date'],
+          releaseDate: dayjs(card['film_info']['release']['date']).format('DD MMMM YYYY'),
           country: card['film_info']['release']['release_country'],
         },
         duration : {
           hours: Math.floor(card['film_info']['runtime'] / MINUTES_PER_HOUR),
           minutes: card['film_info']['runtime'] % MINUTES_PER_HOUR,
         },
-        genre: `${card['film_info']['genre']}`,
+        genre: card['film_info']['genre'],
         description: card['film_info']['description'],
         isInWatchList: card['user_details']['watchlist'],
         isAlreadyWatched: card['user_details']['already_watched'],
@@ -86,6 +88,8 @@ export default class MoviesModel extends AbstractObserver {
     delete adaptedCard['user_details']['already_watched'];
     delete adaptedCard['user_details']['favorite'];
     delete adaptedCard['user_details']['watching_date'];
+    delete adaptedCard['user_details'];
+    delete adaptedCard['film_info'];
 
     return adaptedCard;
   }

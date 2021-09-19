@@ -17,9 +17,9 @@ const createEmojiTemplate = (value) => {
   return `<img src="./images/emoji/${value}.png" width="${EMOJI_SIZE}" height="${EMOJI_SIZE}" alt="emoji">`;
 };
 
-export const createPopupTemplate = (filmCard) => {
+export const createPopupTemplate = (filmCard, comments) => {
   const popupControlsTemplate = new PopupControlsView(filmCard).getTemplate();
-  const commentsTemplate = new CommentsView(filmCard).getTemplate();
+  const commentsTemplate = new CommentsView(comments).getTemplate();
   const emojiTemplate = createEmojiTemplate(filmCard.emoji);
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -29,7 +29,7 @@ export const createPopupTemplate = (filmCard) => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="./images/posters/${filmCard.poster}" alt="">
+          <img class="film-details__poster-img" src="./${filmCard.poster}" alt="">
 
           <p class="film-details__age">${filmCard.age}+</p>
         </div>
@@ -133,9 +133,10 @@ export const createPopupTemplate = (filmCard) => {
 };
 
 export default class PopupView extends SmartView {
-  constructor(card) {
+  constructor(card, comments) {
     super();
     this._data = PopupView.parseCardToData(card);
+    this._comments = comments;
     this._closeButtonHandler = this._closeButtonHandler.bind(this);
     this._addToFavoritesClickHandler = this._addToFavoritesClickHandler.bind(this);
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
@@ -147,7 +148,7 @@ export default class PopupView extends SmartView {
   }
 
   getTemplate() {
-    return createPopupTemplate(this._data);
+    return createPopupTemplate(this._data, this._comments);
   }
 
   _closeButtonHandler(evt) {
