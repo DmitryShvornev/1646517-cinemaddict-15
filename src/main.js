@@ -25,7 +25,7 @@ const menuModel = new MenuModel();
 const menuPresenter = new MenuPresenter(siteMainElement, menuModel, cardsModel);
 menuPresenter.init();
 const moviePresenter = new MovieListPresenter(siteMainElement, cardsModel, menuModel, commentsModel, api);
-//moviePresenter.init();
+moviePresenter.init();
 
 
 let statisticsComponent = null;
@@ -56,5 +56,3 @@ api.getCards()
     render(siteHeaderElement, new UserRankView(cards));
     render(footerStats, new StatsView(cards));
   });
-
-moviePresenter.init();

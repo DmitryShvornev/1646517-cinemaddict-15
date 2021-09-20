@@ -9,6 +9,7 @@ import {SortType} from '../const.js';
 import {cardsFilter} from '../model/filters.js';
 import {UserAction, UpdateType, FilterType} from '../const.js';
 import LoadingView from '../view/loading.js';
+import MoviesModel from '../model/movies.js';
 
 const LIST_RENDER_COUNT = 5;
 
@@ -73,7 +74,9 @@ export default class MovieListPresenter {
         break;
       case UserAction.ADD_COMMENT:
         this._api.addComment(update, innerUpdate).then((response) => {
-          this._commentsModel.addComment(updateType, response, innerUpdate);
+          const updatedMovie = MoviesModel.adaptToClient(response.movie);
+          const updatedComment = response.comments[response.comments.length - 1];
+          this._commentsModel.addComment(updateType, updatedMovie, updatedComment);
         })
           .catch(() => {
             this._cardPresenter.get(update.id).getPopupComponent().shakeForm();

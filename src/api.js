@@ -47,9 +47,7 @@ export default class Api {
       body: JSON.stringify(comment),
       headers: new Headers({'Content-Type': 'application/json'}),
     })
-      .then(Api.toJSON)
-      .then((item) => item.movie)
-      .then(MoviesModel.adaptToClient);
+      .then(Api.toJSON);
   }
 
   deleteComment(card, comment) {
