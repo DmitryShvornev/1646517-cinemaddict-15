@@ -43,5 +43,5 @@ export const MenuItem = {
   STATS: 'STATS',
 };
 
-export const AUTHORIZATION = 'Basic fh4a412gs31662j';
+export const AUTHORIZATION = 'Basic fh4a412gs31562j';
 export const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';

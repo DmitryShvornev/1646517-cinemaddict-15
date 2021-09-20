@@ -21,14 +21,11 @@ const footerStats = document.querySelector('.footer__statistics');
 const cardsModel = new MoviesModel();
 const commentsModel = new CommentsModel();
 
-
 const menuModel = new MenuModel();
 const menuPresenter = new MenuPresenter(siteMainElement, menuModel, cardsModel);
 menuPresenter.init();
-
-
 const moviePresenter = new MovieListPresenter(siteMainElement, cardsModel, menuModel, commentsModel, api);
-moviePresenter.init();
+//moviePresenter.init();
 
 
 let statisticsComponent = null;
@@ -55,6 +52,9 @@ api.getCards()
   .then((cards) => {
     cardsModel.setCards(UpdateType.INIT, cards);
     commentsModel.setData(cards);
+
     render(siteHeaderElement, new UserRankView(cards));
     render(footerStats, new StatsView(cards));
   });
+
+moviePresenter.init();

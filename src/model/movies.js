@@ -127,6 +127,8 @@ export default class MoviesModel extends AbstractObserver {
     delete adaptedCard.watchingDate;
     delete adaptedCard.isInFavorites;
     delete adaptedCard.duration;
+    delete adaptedCard.details;
+    delete adaptedCard.year;
 
     return adaptedCard;
   }

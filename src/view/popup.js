@@ -8,6 +8,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
 const EMOJI_SIZE = 55;
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 const createEmojiTemplate = (value) => {
   if (!value) {
@@ -150,6 +151,22 @@ export default class PopupView extends SmartView {
     return createPopupTemplate(this._data, this._comments);
   }
 
+  shake(element) {
+    element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+  }
+
+  shakeButton(id) {
+    const element = this.getElement().querySelector(`button[data-comment-id='${id}']`);
+    element.disabled = false;
+    this.shake(element);
+  }
+
+  shakeForm() {
+    const element = this.getElement().querySelector('.film-details__inner');
+    element.disabled = false;
+    this.shake(element);
+  }
+
   _closeButtonHandler(evt) {
     evt.preventDefault();
     this._callback.closeButton();
@@ -183,8 +200,10 @@ export default class PopupView extends SmartView {
     evt.preventDefault();
     if (evt.target.matches('button')){
       const {commentId} = evt.target.dataset;
-      const index = this._data.comments.findIndex(({id}) => id === commentId);
-      const commentToDelete = this._data.comments[index];
+      evt.target.disabled = true;
+      evt.target.innerHTML = 'Deleting...';
+      const index = this._data.comments.findIndex((item) => item === commentId);
+      const commentToDelete = this._comments[index];
       this._callback.deleteClick(commentToDelete);
     }
   }
@@ -195,10 +214,10 @@ export default class PopupView extends SmartView {
       const emoji = this._data.emoji;
       const commentToAdd = {
         emotion: emoji,
-        text: commentText,
+        comment: commentText,
       };
       this._callback.addComment(commentToAdd);
-      this.getElement().querySelector('.film-details__inner').submit();
+      this.getElement().querySelector('.film-details__inner').disabled = true;
     }
   }
 

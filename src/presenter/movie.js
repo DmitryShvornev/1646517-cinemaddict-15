@@ -77,6 +77,10 @@ export default class CardPresenter {
     }
   }
 
+  getPopupComponent() {
+    return this._popupComponent;
+  }
+
   destroy() {
     remove(this._cardComponent);
     remove(this._popupComponent);
