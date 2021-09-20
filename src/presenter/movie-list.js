@@ -74,7 +74,9 @@ export default class MovieListPresenter {
         break;
       case UserAction.ADD_COMMENT:
         this._api.addComment(update, innerUpdate).then((response) => {
+          const comments = response.movie.comments;
           const updatedMovie = MoviesModel.adaptToClient(response.movie);
+          updatedMovie.comments = comments;
           const updatedComment = response.comments[response.comments.length - 1];
           this._commentsModel.addComment(updateType, updatedMovie, updatedComment);
         })
@@ -195,7 +197,6 @@ export default class MovieListPresenter {
       return;
     }
     const cards = this._getCards();
-    this._commentsModel.setData(cards);
     const cardCount = cards.length;
     if (cardCount === 0) {
       return this._renderNoCard();

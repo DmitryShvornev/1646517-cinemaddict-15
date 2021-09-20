@@ -52,7 +52,6 @@ api.getCards()
   .then((cards) => {
     cardsModel.setCards(UpdateType.INIT, cards);
     commentsModel.setData(cards);
-
     render(siteHeaderElement, new UserRankView(cards));
     render(footerStats, new StatsView(cards));
   });

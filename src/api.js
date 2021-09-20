@@ -30,6 +30,7 @@ export default class Api {
   }
 
   updateCard(card) {
+    console.log(MoviesModel.adaptToServer(card));
     return this._load({
       url: `movies/${card.id}`,
       method: Method.PUT,
