@@ -32,14 +32,14 @@ export default class CardPresenter {
     this._handlePopupAlreadyWatchedClick = this._handlePopupAlreadyWatchedClick.bind(this);
   }
 
-  init(card) {
+  init(card, comments) {
     this._card = card;
 
     const prevCardComponent = this._cardComponent;
     const prevPopupComponent = this._popupComponent;
 
     this._cardComponent = new CardView(card);
-    this._popupComponent = new PopupView(card);
+    this._popupComponent = new PopupView(card, comments);
 
     this._cardComponent.setPosterClickHandler(this._handleCardClick);
     this._cardComponent.setTitleClickHandler(this._handleCardClick);

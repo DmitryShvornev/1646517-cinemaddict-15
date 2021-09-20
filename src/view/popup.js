@@ -4,7 +4,6 @@ import PopupControlsView from './popup-controls.js';
 import he from 'he';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {nanoid} from 'nanoid';
 
 dayjs.extend(relativeTime);
 
@@ -17,9 +16,9 @@ const createEmojiTemplate = (value) => {
   return `<img src="./images/emoji/${value}.png" width="${EMOJI_SIZE}" height="${EMOJI_SIZE}" alt="emoji">`;
 };
 
-export const createPopupTemplate = (filmCard) => {
+export const createPopupTemplate = (filmCard, comments) => {
   const popupControlsTemplate = new PopupControlsView(filmCard).getTemplate();
-  const commentsTemplate = new CommentsView(filmCard).getTemplate();
+  const commentsTemplate = new CommentsView(comments).getTemplate();
   const emojiTemplate = createEmojiTemplate(filmCard.emoji);
   return `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
@@ -29,7 +28,7 @@ export const createPopupTemplate = (filmCard) => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="./images/posters/${filmCard.poster}" alt="">
+          <img class="film-details__poster-img" src="./${filmCard.poster}" alt="">
 
           <p class="film-details__age">${filmCard.age}+</p>
         </div>
@@ -38,7 +37,7 @@ export const createPopupTemplate = (filmCard) => {
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
               <h3 class="film-details__title">${filmCard.title}</h3>
-              <p class="film-details__title-original">Original: ${filmCard.title}</p>
+              <p class="film-details__title-original">Original: ${filmCard.original}</p>
             </div>
 
             <div class="film-details__rating">
@@ -61,7 +60,7 @@ export const createPopupTemplate = (filmCard) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${filmCard.details.releaseDate}</td>
+              <td class="film-details__cell">${dayjs(filmCard.details.releaseDate).format('DD MMMM YYYY')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
@@ -133,9 +132,10 @@ export const createPopupTemplate = (filmCard) => {
 };
 
 export default class PopupView extends SmartView {
-  constructor(card) {
+  constructor(card, comments) {
     super();
     this._data = PopupView.parseCardToData(card);
+    this._comments = comments;
     this._closeButtonHandler = this._closeButtonHandler.bind(this);
     this._addToFavoritesClickHandler = this._addToFavoritesClickHandler.bind(this);
     this._addToWatchListClickHandler = this._addToWatchListClickHandler.bind(this);
@@ -147,7 +147,7 @@ export default class PopupView extends SmartView {
   }
 
   getTemplate() {
-    return createPopupTemplate(this._data);
+    return createPopupTemplate(this._data, this._comments);
   }
 
   _closeButtonHandler(evt) {
@@ -182,8 +182,8 @@ export default class PopupView extends SmartView {
   _deleteClickHandler(evt) {
     evt.preventDefault();
     if (evt.target.matches('button')){
-      const id = evt.target.dataset.commentId;
-      const index = this._data.comments.findIndex((comment) => comment.id === id);
+      const {commentId} = evt.target.dataset;
+      const index = this._data.comments.findIndex(({id}) => id === commentId);
       const commentToDelete = this._data.comments[index];
       this._callback.deleteClick(commentToDelete);
     }
@@ -193,12 +193,8 @@ export default class PopupView extends SmartView {
     if (evt.key === 'Enter' && evt.ctrlKey) {
       const commentText = he.encode(evt.target.value);
       const emoji = this._data.emoji;
-      const currentDate = dayjs().fromNow();
       const commentToAdd = {
-        id: nanoid(),
         emotion: emoji,
-        author: 'Me',
-        date: currentDate,
         text: commentText,
       };
       this._callback.addComment(commentToAdd);

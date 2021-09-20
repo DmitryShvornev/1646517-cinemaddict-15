@@ -15,6 +15,7 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 export const UserAction = {
@@ -41,3 +42,6 @@ export const MenuItem = {
   FILTER: 'FILTER',
   STATS: 'STATS',
 };
+
+export const AUTHORIZATION = 'Basic fh4a412gs31662j';
+export const END_POINT = 'https://15.ecmascript.pages.academy/cinemaddict';

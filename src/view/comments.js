@@ -1,6 +1,6 @@
 import AbstractView from './abstract.js';
 
-const createCommentsTemplate = ({comments}) => (comments.slice().map((comment) => `<li class="film-details__comment">
+const createCommentsTemplate = (comments) => (comments.slice().map((comment) => `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-${comment.emotion}">
   </span>
@@ -15,12 +15,12 @@ const createCommentsTemplate = ({comments}) => (comments.slice().map((comment) =
 </li>`).join(''));
 
 export default class CommentsView extends AbstractView {
-  constructor(card) {
+  constructor(comments) {
     super();
-    this._card = card;
+    this._comments = comments;
   }
 
   getTemplate() {
-    return createCommentsTemplate(this._card);
+    return createCommentsTemplate(this._comments);
   }
 }

@@ -8,24 +8,28 @@ import CardPresenter from './movie.js';
 import {SortType} from '../const.js';
 import {cardsFilter} from '../model/filters.js';
 import {UserAction, UpdateType, FilterType} from '../const.js';
+import LoadingView from '../view/loading.js';
 
 const LIST_RENDER_COUNT = 5;
 
 export default class MovieListPresenter {
-  constructor(container, model, filterModel, commentsModel) {
+  constructor(container, model, filterModel, commentsModel, api) {
     this._container = container;
     this._model = model;
     this._filterModel = filterModel;
     this._commentsModel = commentsModel;
+    this._api = api;
     this._noCardComponent = null;
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
     this._cardListComponent = new CardListView();
     this._filmsListComponent = new FilmsListView();
+    this._loadingComponent = new LoadingView();
     this._renderedCardsCount = LIST_RENDER_COUNT;
     this._cardPresenter = new Map();
     this._currentFilterType = FilterType.ALL;
     this._currentSortType = SortType.DEFAULT;
+    this._isLoading = true;
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -63,19 +67,19 @@ export default class MovieListPresenter {
   _handleViewAction(actionType, updateType, update, innerUpdate = null) {
     switch (actionType) {
       case UserAction.UPDATE_CARD:
-        this._model.updateCard(updateType, update);
-        break;
-      case UserAction.ADD_CARD:
-        this._model.addCard(updateType, update);
-        break;
-      case UserAction.DELETE_CARD:
-        this._model.deleteCard(updateType, update);
+        this._api.updateCard(update).then((response) => {
+          this._model.updateCard(updateType, response);
+        });
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(updateType, update, innerUpdate);
+        this._api.addComment(update, innerUpdate).then((response) => {
+          this._commentsModel.addComment(updateType, response, innerUpdate);
+        });
         break;
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(updateType, update, innerUpdate);
+        this._api.deleteComment(update, innerUpdate).then((response) => {
+          this._commentsModel.deleteComment(updateType, response, innerUpdate);
+        });
         break;
     }
   }
@@ -91,6 +95,11 @@ export default class MovieListPresenter {
         break;
       case UpdateType.MAJOR:
         this._clearPanel({resetRenderedCardsCount: true, resetSortType: true});
+        this._renderMovieList();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderMovieList();
         break;
     }
@@ -120,8 +129,13 @@ export default class MovieListPresenter {
   }
 
   _renderCard(cardListElement, card) {
+    //const index = String(this._getCards().findIndex(({id}) => id === card.id));
+    const comments = this._commentsModel.getData();
+    // Не работает доступ к элементу comments -  ????
+    //console.log(comments);
+    //console.log(comments[index]);
     const cardPresenter = new CardPresenter(cardListElement, this._handleViewAction, this._handleModeChange);
-    cardPresenter.init(card);
+    cardPresenter.init(card, comments);
     this._cardPresenter.set(card.id, cardPresenter);
   }
 
@@ -132,6 +146,10 @@ export default class MovieListPresenter {
   _renderNoCard() {
     this._noCardComponent = new NoCardView(this._currentFilterType);
     render(this._container, this._noCardComponent);
+  }
+
+  _renderLoading() {
+    render(this._container, this._loadingComponent);
   }
 
   _handleShowMoreButtonClick() {
@@ -156,6 +174,10 @@ export default class MovieListPresenter {
   }
 
   _renderMovieList() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
     const cards = this._getCards();
     this._commentsModel.setData(cards);
     const cardCount = cards.length;

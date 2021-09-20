@@ -9,7 +9,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(isBetween);
 
 const BAR_HEIGHT = 50;
-const MINUTES_PER_HOUR = 60;
+export const MINUTES_PER_HOUR = 60;
 
 const TimeFilterType = {
   ALL: 'all-time',
@@ -21,7 +21,7 @@ const TimeFilterType = {
 
 const makeItemsUniq = (items) => [...new Set(items)];
 
-const countCardsByGenre = (cards, genre) => cards.filter((card) => card.genre === genre).length;
+const countCardsByGenre = (cards, genre) => cards.filter((card) => card.genre.includes(genre)).length;
 
 const countWatchedFilmsInDateRange = (cards, dateFrom, dateTo) => {
   if (dateFrom === null) {
@@ -37,7 +37,7 @@ const countWatchedFilmsInDateRange = (cards, dateFrom, dateTo) => {
 };
 
 const getWatchedFilmsInDateRange = (cards, dateFrom, dateTo) =>
-  cards.filter((card) => dayjs(card.watchingDate).isBetween(dateFrom, dateTo));
+  cards.filter(({watchingDate}) => dayjs(watchingDate).isBetween(dateFrom, dateTo));
 
 const calculateDate = (filter) => {
   let diff;
@@ -60,7 +60,9 @@ const calculateDate = (filter) => {
 };
 
 const processGenres = (cards) => {
-  const genres = cards.map((card) => card.genre);
+  const genresLists = cards.map((card) => card.genre);
+  const genres = [];
+  genresLists.forEach((item) => item.forEach((subItem) => genres.push(subItem)));
   const uniqGenres = makeItemsUniq(genres);
   const cardsByGenreCounts = uniqGenres.map((genre) => countCardsByGenre(cards, genre));
   const maxIndex = cardsByGenreCounts.findIndex((item) => item === Math.max(...cardsByGenreCounts));
@@ -80,10 +82,10 @@ const processGenres = (cards) => {
 
 const countDuration = (cards) => {
   let totalMinutes = 0;
-  for (let i = 0; i < cards.length; i++) {
-    totalMinutes += Number(cards[i].duration.hours) * MINUTES_PER_HOUR;
-    totalMinutes += Number(cards[i].duration.minutes);
-  }
+  cards.forEach((card) => {
+    totalMinutes += Number(card.duration.hours) * MINUTES_PER_HOUR;
+    totalMinutes += Number(card.duration.minutes);
+  });
   const totalHours = Math.floor(totalMinutes / MINUTES_PER_HOUR);
   const restMinutes = totalMinutes % MINUTES_PER_HOUR;
   return {
@@ -93,7 +95,7 @@ const countDuration = (cards) => {
 };
 
 const renderStatsChart = (statisticCtx, cards, dateFrom, dateTo) => {
-  let cardsInDateRange = cards;
+  let cardsInDateRange = cards.slice();
   if (dateFrom !== null) {
     cardsInDateRange = getWatchedFilmsInDateRange(cards, dateFrom, dateTo);
   }
@@ -109,6 +111,7 @@ const renderStatsChart = (statisticCtx, cards, dateFrom, dateTo) => {
         backgroundColor: '#ffe800',
         hoverBackgroundColor: '#ffe800',
         anchor: 'start',
+        barThickness: 24,
       }],
     },
     options: {
@@ -134,7 +137,6 @@ const renderStatsChart = (statisticCtx, cards, dateFrom, dateTo) => {
             display: false,
             drawBorder: false,
           },
-          barThickness: 24,
         }],
         xAxes: [{
           ticks: {
@@ -158,9 +160,8 @@ const renderStatsChart = (statisticCtx, cards, dateFrom, dateTo) => {
 };
 
 
-const createStatsTemplate = (data) => {
-  const {cards, dateFrom, dateTo} = data;
-  let dataToProcess = cards;
+const createStatsTemplate = ({cards, dateFrom, dateTo}) => {
+  let dataToProcess = cards.slice();
   if (dateFrom !== null) {
     dataToProcess = getWatchedFilmsInDateRange(cards, dateFrom, dateTo);
   }
@@ -236,9 +237,12 @@ export default class StatisticsView extends SmartView {
   }
 
   _filterClickHandler(evt) {
-    const elementId = evt.target.htmlFor;
-    this._filterType = this.getElement().querySelector(`[id=${elementId}]`).value;
-    this.updateData({dateFrom: calculateDate(this._filterType)});
+    if (evt.target.matches('label')) {
+      const elementId = evt.target.htmlFor;
+      this._filterType = this.getElement().querySelector(`[id=${elementId}]`).value;
+      this.updateData({dateFrom: calculateDate(this._filterType)});
+      this.getElement().querySelector(`[id=${elementId}]`).checked = true;
+    }
   }
 
   _setInnerHandlers() {

@@ -1,4 +1,6 @@
 import AbstractObserver from '../abstract-observer.js';
+import Api from '../api.js';
+import {END_POINT, AUTHORIZATION} from '../const.js';
 
 export default class CommentsModel extends AbstractObserver {
   constructor() {
@@ -8,11 +10,18 @@ export default class CommentsModel extends AbstractObserver {
 
   setData(cards) {
     this._cards = cards.slice();
-    this._data = this._cards.map((card) => card.comments);
+    const comments = [];
+    const api = new Api(END_POINT, AUTHORIZATION);
+    cards.forEach((card) => api.getComments(card.id).then((items) => comments.push(items)));
+    this._data = comments;
   }
 
   getData() {
     return this._data;
+  }
+
+  getCards() {
+    return this._cards;
   }
 
   addComment(updateType, update, innerUpdate) {
