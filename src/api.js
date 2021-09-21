@@ -26,8 +26,7 @@ export default class Api {
 
   getComments(id) {
     return this._load({url: `comments/${id}`})
-      .then((Api.toJSON))
-      .then((comments) => comments);
+      .then((Api.toJSON));
   }
 
   updateCard(card) {
@@ -37,12 +36,13 @@ export default class Api {
       body: JSON.stringify(MoviesModel.adaptToServer(card)),
       headers: new Headers({'Content-Type': 'application/json'}),
     })
-      .then(Api.toJSON);
+      .then(Api.toJSON)
+      .then(MoviesModel.adaptToClient);
   }
 
   addComment(card, comment) {
     return this._load({
-      url: `comments/${card.id}/${comment.id}`,
+      url: `comments/${card.id}`,
       method: Method.POST,
       body: JSON.stringify(comment),
       headers: new Headers({'Content-Type': 'application/json'}),
@@ -52,7 +52,7 @@ export default class Api {
 
   deleteComment(card, comment) {
     return this._load({
-      url: `comments/${card.id}/${comment.id}`,
+      url: `comments/${comment.id}`,
       method: Method.DELETE,
     });
   }

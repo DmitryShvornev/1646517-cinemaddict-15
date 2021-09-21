@@ -9,6 +9,7 @@ import {SortType} from '../const.js';
 import {cardsFilter} from '../model/filters.js';
 import {UserAction, UpdateType, FilterType} from '../const.js';
 import LoadingView from '../view/loading.js';
+import MoviesModel from '../model/movies.js';
 
 const LIST_RENDER_COUNT = 5;
 
@@ -73,21 +74,36 @@ export default class MovieListPresenter {
         break;
       case UserAction.ADD_COMMENT:
         this._api.addComment(update, innerUpdate).then((response) => {
-          this._commentsModel.addComment(updateType, response, innerUpdate);
-        });
+          const comments = response.movie.comments;
+          const updatedMovie = MoviesModel.adaptToClient(response.movie);
+          updatedMovie.comments = comments;
+          const updatedComment = response.comments[response.comments.length - 1];
+          this._commentsModel.addComment(updateType, updatedMovie, updatedComment);
+        })
+          .catch(() => {
+            this._cardPresenter.get(update.id).getPopupComponent().shakeForm();
+          });
         break;
       case UserAction.DELETE_COMMENT:
-        this._api.deleteComment(update, innerUpdate).then((response) => {
-          this._commentsModel.deleteComment(updateType, response, innerUpdate);
-        });
+        this._api.deleteComment(update, innerUpdate).then(() => {
+          this._commentsModel.deleteComment(updateType, update, innerUpdate);
+        })
+          .catch(() => {
+            this._cardPresenter.get(update.id).getPopupComponent().shakeButton(innerUpdate.id);
+          });
         break;
     }
   }
 
   _handleModelEvent(updateType, data) {
+    let comments = [];
+    if(data) {
+      const index = this._getCards().findIndex(({id}) => id === data.id);
+      comments = this._commentsModel.getData()[index];
+    }
     switch (updateType) {
       case UpdateType.PATCH:
-        this._cardPresenter.get(data.id).init(data);
+        this._cardPresenter.get(data.id).init(data, comments);
         break;
       case UpdateType.MINOR:
         this._clearPanel();
@@ -129,13 +145,15 @@ export default class MovieListPresenter {
   }
 
   _renderCard(cardListElement, card) {
-    //const index = String(this._getCards().findIndex(({id}) => id === card.id));
+    const index = this._getCards().findIndex(({id}) => id === card.id);
     const comments = this._commentsModel.getData();
-    // Не работает доступ к элементу comments -  ????
-    //console.log(comments);
-    //console.log(comments[index]);
     const cardPresenter = new CardPresenter(cardListElement, this._handleViewAction, this._handleModeChange);
-    cardPresenter.init(card, comments);
+    if(comments[index]){
+      cardPresenter.init(card, comments[index]);
+    } else {
+      cardPresenter.init(card, comments);
+    }
+    //cardPresenter.init(card, comments);
     this._cardPresenter.set(card.id, cardPresenter);
   }
 
@@ -179,7 +197,6 @@ export default class MovieListPresenter {
       return;
     }
     const cards = this._getCards();
-    this._commentsModel.setData(cards);
     const cardCount = cards.length;
     if (cardCount === 0) {
       return this._renderNoCard();
