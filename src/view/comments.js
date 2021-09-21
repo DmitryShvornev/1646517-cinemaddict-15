@@ -4,7 +4,8 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
 
-const createCommentsTemplate = (comments) => (comments.map((item) => `<li class="film-details__comment">
+const createCommentsTemplate = (comments) => {
+  const commentsItems = comments.map((item) => `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
     <img src="./images/emoji/${item.emotion}.png" width="55" height="55" alt="emoji-${item.emotion}">
   </span>
@@ -16,7 +17,9 @@ const createCommentsTemplate = (comments) => (comments.map((item) => `<li class=
       <button class="film-details__comment-delete" data-comment-id=${item.id}>Delete</button>
     </p>
   </div>
-</li>`).join(''));
+</li>`).join('');
+  return `<ul class="film-details__comments-list">${commentsItems}</ul>`;
+};
 
 export default class CommentsView extends AbstractView {
   constructor(comments) {

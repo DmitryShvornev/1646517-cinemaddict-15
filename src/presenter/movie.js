@@ -1,5 +1,8 @@
 import CardView from '../view/card.js';
 import PopupView from '../view/popup.js';
+import CommentsView from '../view/comments.js';
+import Api from '../api.js';
+import {END_POINT, AUTHORIZATION} from '../const.js';
 import {render, pushBodyElement, popBodyElement, remove, replace} from '../utils.js';
 import {UserAction, UpdateType} from '../const.js';
 import dayjs from 'dayjs';
@@ -14,6 +17,7 @@ export default class CardPresenter {
     this._container = container;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._api = new Api(END_POINT, AUTHORIZATION);
 
     this._cardComponent = null;
     this._popupComponent = null;
@@ -32,14 +36,14 @@ export default class CardPresenter {
     this._handlePopupAlreadyWatchedClick = this._handlePopupAlreadyWatchedClick.bind(this);
   }
 
-  init(card, comments) {
+  init(card, commentsModel) {
     this._card = card;
 
     const prevCardComponent = this._cardComponent;
     const prevPopupComponent = this._popupComponent;
-
+    this._commentsModel = commentsModel;
     this._cardComponent = new CardView(card);
-    this._popupComponent = new PopupView(card, comments);
+    this._popupComponent = new PopupView(card, this._commentsModel);
 
     this._cardComponent.setPosterClickHandler(this._handleCardClick);
     this._cardComponent.setTitleClickHandler(this._handleCardClick);
@@ -47,12 +51,20 @@ export default class CardPresenter {
     this._cardComponent.setAddToFavoritesClickHandler(this._handleAddToFavoritesClick);
     this._cardComponent.setAddToWatchListClickHandler(this._handleAddToWatchListClick);
     this._cardComponent.setAlreadyWatchedClickHandler(this._handleAlreadyWatchedClick);
+
+    if (this._commentsModel.getData()[this._card.id]) {
+      const commentsElement = new CommentsView(this._commentsModel.getData()[this._card.id]).getElement();
+      const oldCommentsElement = this._popupComponent.getElement().querySelector('.film-details__comments-list');
+      replace(commentsElement, oldCommentsElement);
+    }
+
     this._popupComponent.setCloseButtonHandler(this._handleCardClose);
     this._popupComponent.setAddToFavoritesClickHandler(this._handlePopupAddToFavoritesClick);
     this._popupComponent.setAddToWatchListClickHandler(this._handlePopupAddToWatchListClick);
     this._popupComponent.setAlreadyWatchedClickHandler(this._handlePopupAlreadyWatchedClick);
     this._popupComponent.setDeleteClickHandler(this._handleDeleteCommentClick);
     this._popupComponent.setAddCommentHandler(this._handleAddCommentClick);
+
     if (prevCardComponent === null || prevPopupComponent === null) {
       render(this._container, this._cardComponent);
       return;
@@ -96,10 +108,17 @@ export default class CardPresenter {
   }
 
   _handleCardClick () {
-    pushBodyElement(this._popupComponent);
-    document.addEventListener('keydown', this._handleEscKeyDown);
-    this._changeMode();
-    this._popupMode = popupMode.OPENED;
+    this._api.getComments(this._card.id).then((comments) => {
+      document.addEventListener('keydown', this._handleEscKeyDown);
+      const commentsElement = new CommentsView(comments).getElement();
+      const oldCommentsElement = this._popupComponent.getElement().querySelector('.film-details__comments-list');
+      replace(commentsElement, oldCommentsElement);
+      this._commentsModel.pushData(this._card.id, comments);
+      this._changeMode();
+      this._popupMode = popupMode.OPENED;
+      this._popupComponent.restoreHandlers();
+      pushBodyElement(this._popupComponent);
+    });
   }
 
   _handleCardClose() {

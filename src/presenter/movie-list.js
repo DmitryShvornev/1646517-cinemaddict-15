@@ -96,14 +96,9 @@ export default class MovieListPresenter {
   }
 
   _handleModelEvent(updateType, data) {
-    let comments = [];
-    if(data) {
-      const index = this._getCards().findIndex(({id}) => id === data.id);
-      comments = this._commentsModel.getData()[index];
-    }
     switch (updateType) {
       case UpdateType.PATCH:
-        this._cardPresenter.get(data.id).init(data, comments);
+        this._cardPresenter.get(data.id).init(data, this._commentsModel);
         break;
       case UpdateType.MINOR:
         this._clearPanel();
@@ -145,15 +140,8 @@ export default class MovieListPresenter {
   }
 
   _renderCard(cardListElement, card) {
-    const index = this._getCards().findIndex(({id}) => id === card.id);
-    const comments = this._commentsModel.getData();
     const cardPresenter = new CardPresenter(cardListElement, this._handleViewAction, this._handleModeChange);
-    if(comments[index]){
-      cardPresenter.init(card, comments[index]);
-    } else {
-      cardPresenter.init(card, comments);
-    }
-    //cardPresenter.init(card, comments);
+    cardPresenter.init(card, this._commentsModel);
     this._cardPresenter.set(card.id, cardPresenter);
   }
 
