@@ -1,5 +1,5 @@
 import {FilterMap, FilterType} from '../const.js';
-import AbstractView from './abstract.js';
+import AbstractView from './abstract-view.js';
 
 const LOW_RANK = 'Novice';
 const MIDDLE_RANK = 'Fan';

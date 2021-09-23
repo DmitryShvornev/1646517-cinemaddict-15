@@ -1,8 +1,8 @@
-import SmartView from './smart.js';
-import {getRank} from './user-rank.js';
+import SmartView from './smart-view.js';
+import {getRank} from './user-rank-view.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {cardsFilter} from '../model/filters.js';
+import {cardsFilter} from '../model/menu-model.js';
 import {FilterType} from '../const.js';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -28,8 +28,8 @@ const countWatchedFilmsInDateRange = (cards, dateFrom, dateTo) => {
     return cards.length;
   }
   let counter = 0;
-  for (let i = 0; i < cards.length; i++) {
-    if(dayjs(cards[i].watchingDate).isBetween(dateFrom, dateTo)) {
+  for (const card of cards) {
+    if(dayjs(card.watchingDate).isBetween(dateFrom, dateTo)) {
       counter++;
     }
   }

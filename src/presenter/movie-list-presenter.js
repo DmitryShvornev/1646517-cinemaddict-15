@@ -1,15 +1,15 @@
-import SortMenuView from '../view/sort-menu.js';
-import CardListView from '../view/card-list.js';
-import NoCardView from '../view/no-card.js';
-import FilmsListView from '../view/films-list.js';
-import ShowMoreButtonView from '../view/show-more-button.js';
+import SortMenuView from '../view/sort-menu-view.js';
+import CardListView from '../view/card-list-view.js';
+import NoCardView from '../view/no-card-view.js';
+import FilmsListView from '../view/films-list-view.js';
+import ShowMoreButtonView from '../view/show-more-button-view.js';
 import {render, remove, sortByDate, sortByRating} from '../utils.js';
-import CardPresenter from './movie.js';
+import CardPresenter from './card-presenter.js';
 import {SortType} from '../const.js';
-import {cardsFilter} from '../model/filters.js';
+import {cardsFilter} from '../model/menu-model.js';
 import {UserAction, UpdateType, FilterType} from '../const.js';
-import LoadingView from '../view/loading.js';
-import MoviesModel from '../model/movies.js';
+import LoadingView from '../view/loading-view.js';
+import MoviesModel from '../model/movies-model.js';
 
 const LIST_RENDER_COUNT = 5;
 

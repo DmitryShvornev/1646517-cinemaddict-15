@@ -1,4 +1,4 @@
-import AbstractView from './abstract.js';
+import AbstractView from './abstract-view.js';
 import dayjs from 'dayjs';
 
 export const createCardTemplate = (filmCard) => (`<article class="film-card">

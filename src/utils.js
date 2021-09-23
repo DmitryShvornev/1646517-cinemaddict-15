@@ -1,4 +1,4 @@
-import AbstractView from './view/abstract.js';
+import AbstractView from './view/abstract-view.js';
 import dayjs from 'dayjs';
 import {RenderPosition} from './const.js';
 
@@ -35,7 +35,7 @@ export const replace = (newChild, oldChild) => {
   }
 
   const parent = oldChild.parentElement;
-  if (parent === null || oldChild === null || newChild === null) {
+  if (parent === null || newChild === null) {
     throw new Error('Cannor replace unexisting elements.');
   }
   parent.replaceChild(newChild, oldChild);

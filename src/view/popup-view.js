@@ -1,5 +1,5 @@
-import SmartView from './smart.js';
-import PopupControlsView from './popup-controls.js';
+import SmartView from './smart-view.js';
+import PopupControlsView from './popup-controls-view.js';
 import he from 'he';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';

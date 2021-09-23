@@ -1,4 +1,4 @@
-import MenuView from '../view/menu.js';
+import MenuView from '../view/menu-view.js';
 import {render, replace, remove} from '../utils.js';
 import {UpdateType, FilterType, FilterMap} from '../const.js';
 

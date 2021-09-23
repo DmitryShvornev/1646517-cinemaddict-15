@@ -1,4 +1,4 @@
-import AbstractView from './abstract.js';
+import AbstractView from './abstract-view.js';
 import {FilterType, MenuItem} from '../const.js';
 
 

@@ -1,6 +1,6 @@
-import CardView from '../view/card.js';
-import PopupView from '../view/popup.js';
-import CommentsView from '../view/comments.js';
+import CardView from '../view/card-view.js';
+import PopupView from '../view/popup-view.js';
+import CommentsView from '../view/comments-view.js';
 import Api from '../api.js';
 import {END_POINT, AUTHORIZATION} from '../const.js';
 import {render, pushBodyElement, popBodyElement, remove, replace} from '../utils.js';

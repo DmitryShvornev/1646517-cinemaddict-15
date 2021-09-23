@@ -1,5 +1,5 @@
 import AbstractObserver from '../abstract-observer.js';
-import {MINUTES_PER_HOUR} from '../view/statistics.js';
+import {MINUTES_PER_HOUR} from '../view/statistics-view.js';
 
 export default class MoviesModel extends AbstractObserver {
   constructor() {
