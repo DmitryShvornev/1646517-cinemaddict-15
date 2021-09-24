@@ -210,6 +210,7 @@ export default class MovieListPresenter {
     this._cardPresenter.clear();
     remove(this._sortComponent);
     remove(this._showMoreButtonComponent);
+    remove(this._noCardComponent);
     if (resetRenderedCardsCount) {
       this._renderedCardsCount = LIST_RENDER_COUNT;
     } else {
